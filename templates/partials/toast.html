@@ -1,0 +1,11 @@
+{# =========================================================================
+   toast.html — piccola notifica "Email copiata!".
+   Un solo elemento, incluso in ogni pagina, nascosto finché non serve.
+   Viene mostrato da static/js/toast-copia.js quando si clicca "Copia"
+   accanto all'email nella pagina Contatti.
+   ========================================================================= #}
+
+<div class="toast" id="toast-copia" role="status" aria-live="polite" hidden>
+  <span class="toast__pallino" aria-hidden="true"></span>
+  <span class="toast__testo">Email copiata!</span>
+</div>

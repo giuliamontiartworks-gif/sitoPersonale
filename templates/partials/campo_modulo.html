@@ -1,0 +1,51 @@
+{# =========================================================================
+   Macro per i campi del form contatti.
+
+   Uso:
+     {% from "partials/campo_modulo.html" import campo_testo, campo_textarea %}
+     {{ campo_testo("nome", "Nome e cognome", obbligatorio=true) }}
+     {{ campo_testo("email", "Email", tipo="email", obbligatorio=true) }}
+     {{ campo_textarea("messaggio", "Messaggio", obbligatorio=true) }}
+
+   I campi obbligatori mostrano un asterisco rosso accanto all'etichetta.
+
+   Il dropdown "Servizio" NON è qui: è un componente custom a sé,
+   vedi partials/dropdown_servizio.html.
+   ========================================================================= #}
+
+{# Etichetta con l'asterisco per i campi obbligatori. #}
+{% macro _etichetta(nome, testo, obbligatorio) -%}
+  <label class="campo__etichetta" for="campo-{{ nome }}">
+    {{ testo }}{% if obbligatorio %}<span class="campo__obbligatorio" aria-hidden="true">*</span>{% endif %}
+  </label>
+{%- endmacro %}
+
+
+{# --- Campo di testo su singola riga --- #}
+{% macro campo_testo(nome, etichetta, tipo="text", placeholder="", obbligatorio=false, valore="") -%}
+  <div class="campo">
+    {{ _etichetta(nome, etichetta, obbligatorio) }}
+    <input
+      class="campo__input"
+      id="campo-{{ nome }}"
+      name="{{ nome }}"
+      type="{{ tipo }}"
+      placeholder="{{ placeholder }}"
+      value="{{ valore }}"
+      {% if obbligatorio %}required{% endif %}>
+  </div>
+{%- endmacro %}
+
+
+{# --- Campo messaggio su più righe --- #}
+{% macro campo_textarea(nome, etichetta, placeholder="", obbligatorio=false, valore="") -%}
+  <div class="campo">
+    {{ _etichetta(nome, etichetta, obbligatorio) }}
+    <textarea
+      class="campo__textarea"
+      id="campo-{{ nome }}"
+      name="{{ nome }}"
+      placeholder="{{ placeholder }}"
+      {% if obbligatorio %}required{% endif %}>{{ valore }}</textarea>
+  </div>
+{%- endmacro %}

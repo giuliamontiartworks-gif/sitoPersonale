@@ -1,0 +1,23 @@
+{# =========================================================================
+   Macro "badge_certificazione" — pillola bianca con bordo rosso, cliccabile.
+   Al click apre il popup certificazione (vedi popup-certificazioni.js),
+   passando i dati tramite attributi data-*.
+
+   Uso:
+     {% from "partials/badge_certificazione.html" import badge_certificazione %}
+     {% for cert in certificazioni %}{{ badge_certificazione(cert) }}{% endfor %}
+   ========================================================================= #}
+
+{% macro badge_certificazione(cert) -%}
+  <button type="button"
+          class="badge-certificazione"
+          data-badge-certificazione
+          data-nome="{{ cert.nome }}"
+          data-ente="{{ cert.ente }}"
+          data-data="{{ cert.data_verifica }}"
+          data-durata="{{ cert.durata }}"
+          data-id-verifica="{{ cert.id_verifica }}"
+          data-descrizione="{{ cert.descrizione }}">
+    {{ cert.nome }}
+  </button>
+{%- endmacro %}

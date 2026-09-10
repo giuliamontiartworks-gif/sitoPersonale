@@ -1,0 +1,43 @@
+{# =========================================================================
+   Macro "card_progetto" — anteprima di un progetto (immagine + titolo).
+
+   Uso:
+     {% from "partials/card_progetto.html" import card_progetto %}
+     {{ card_progetto(progetto) }}                  -> card con disciplina
+     {{ card_progetto(progetto, con_tag=false) }}   -> card "solo nome"
+     {{ card_progetto(progetto, vetrina=true) }}    -> card grande (Home)
+
+   Parametri:
+     - progetto : dizionario progetto (vedi data/progetti.py)
+     - con_tag  : true (default) mostra la disciplina sopra al titolo
+     - vetrina  : true rende la card in versione grande
+
+   La copertina e' sempre "01.jpg" della cartella static/img/progetti/<slug>/
+   (letta a runtime da immagini_progetto(), vedi app.py).
+   Tutta la card è un unico link, per questo non ci sono <a> annidati.
+   ========================================================================= #}
+
+{% macro card_progetto(progetto, con_tag=true, vetrina=false) -%}
+  {%- set immagini = immagini_progetto(progetto.slug) -%}
+  {%- set copertina = immagini[0] if immagini else none -%}
+
+  <article class="card-progetto {{ 'card-progetto--vetrina' if vetrina }}">
+    <a class="card-progetto__link" href="{{ url_for('progetto', slug_progetto=progetto.slug) }}">
+      <span class="card-progetto__media">
+        {% if copertina %}
+          <img src="{{ url_for('static', filename=copertina) }}"
+               alt="Anteprima del progetto {{ progetto.nome }}">
+        {% else %}
+          {# Segnaposto mostrato finché non ci sono immagini nella cartella. #}
+          <span class="segnaposto-immagine">{{ progetto.nome }}</span>
+        {% endif %}
+      </span>
+
+      {% if con_tag %}
+        <span class="card-progetto__disciplina">{{ nome_disciplina(progetto.categorie[0]) }}</span>
+      {% endif %}
+
+      <span class="card-progetto__titolo">{{ progetto.nome }}</span>
+    </a>
+  </article>
+{%- endmacro %}

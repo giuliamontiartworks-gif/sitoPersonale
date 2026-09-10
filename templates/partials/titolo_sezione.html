@@ -1,0 +1,23 @@
+{# =========================================================================
+   Macro "titolo_sezione" — un titolo (H1 o H2) con sotto la sottolineatura
+   "doodle" disegnata a mano. Usare SEMPRE questa macro per i titoli di
+   sezione, così il doodle è identico ovunque.
+
+   Uso:
+     {% from "partials/titolo_sezione.html" import titolo_sezione %}
+     {{ titolo_sezione("Progetti in evidenza") }}
+     {{ titolo_sezione("Portfolio", livello=1) }}
+   ========================================================================= #}
+
+{% macro titolo_sezione(testo, livello=2, id=none) -%}
+  <div class="titolo-sezione">
+    {% if livello == 1 %}
+      <h1 {% if id %}id="{{ id }}"{% endif %}>{{ testo }}</h1>
+    {% else %}
+      <h2 {% if id %}id="{{ id }}"{% endif %}>{{ testo }}</h2>
+    {% endif %}
+    <img class="doodle-titolo"
+         src="{{ url_for('static', filename='img/doodle-sottolineatura.svg') }}"
+         alt="" aria-hidden="true">
+  </div>
+{%- endmacro %}

@@ -1,0 +1,24 @@
+{# =========================================================================
+   Macro "bottone" — l'unico modo di creare un bottone nel sito.
+
+   Uso:
+     {% from "partials/bottone.html" import bottone %}
+     {{ bottone("Guarda i progetti", href=url_for("portfolio")) }}
+     {{ bottone("Invia messaggio", tipo="submit", variante="primario") }}
+
+   Parametri:
+     - testo     : etichetta del bottone (obbligatorio)
+     - href      : se presente, il bottone è un link <a>; altrimenti un <button>
+     - variante  : "primario" (default) | "secondario" | "su-rosso"
+     - tipo      : per il <button>: "button" (default) | "submit"
+     - classe    : classi CSS aggiuntive (opzionale)
+   ========================================================================= #}
+
+{% macro bottone(testo, href=none, variante="primario", tipo="button", classe="") -%}
+  {%- set classi = "bottone bottone--" ~ variante ~ (" " ~ classe if classe else "") -%}
+  {%- if href -%}
+    <a class="{{ classi }}" href="{{ href }}">{{ testo }}</a>
+  {%- else -%}
+    <button class="{{ classi }}" type="{{ tipo }}">{{ testo }}</button>
+  {%- endif -%}
+{%- endmacro %}

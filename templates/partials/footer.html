@@ -1,0 +1,23 @@
+{# =========================================================================
+   footer.html — piede di pagina, uguale su ogni pagina.
+   Sfondo lilla chiaro, testo viola scuro, contenuto centrato.
+   ========================================================================= #}
+
+{% from "partials/bottone.html" import bottone %}
+
+<footer class="pie-pagina">
+  <a class="pie-pagina__logo" href="{{ url_for('home') }}" aria-label="Giulia Monti, vai alla home">
+    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Giulia Monti">
+  </a>
+
+  {# Titolo su due righe: a capo dopo il punto interrogativo. #}
+  <h2 class="pie-pagina__titolo">{{ footer.titolo_riga1 }}<br>{{ footer.titolo_riga2 }}</h2>
+
+  {{ bottone("Contattami", href=url_for('contatti'), variante="primario") }}
+
+  <nav class="pie-pagina__social" aria-label="Profili social">
+    {% for rete in social %}
+      <a href="{{ rete.url }}" target="_blank" rel="noopener">{{ rete.nome }}</a>
+    {% endfor %}
+  </nav>
+</footer>

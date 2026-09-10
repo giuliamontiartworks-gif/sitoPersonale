@@ -1,0 +1,69 @@
+{# =========================================================================
+   header.html — intestazione del sito, uguale su ogni pagina.
+
+   La voce di menu della pagina corrente riceve la classe "is-attivo"
+   (che disegna la sottolineatura doodle). Per capire quale voce è attiva
+   guardiamo l'endpoint Flask della richiesta corrente:
+     - "portfolio" e "categoria" e "progetto"  -> voce "Portfolio"
+     - "chi_sono"                              -> voce "Chi sono"
+   ========================================================================= #}
+
+{% set endpoint = request.endpoint %}
+{% set portfolio_attivo = endpoint in ["portfolio", "categoria", "progetto"] %}
+{% set chi_sono_attivo = endpoint == "chi_sono" %}
+
+<header class="intestazione">
+  <div class="contenitore intestazione__interno">
+
+    {# Logo: su desktop il nome scritto (font Neulis Cursive), su mobile il
+       simbolo (static/img/logo.svg). La classe .logo--con-segno si aggiunge
+       solo se il file logo.svg esiste davvero. #}
+    <a class="logo {{ 'logo--con-segno' if file_statico_esiste('img/logo.svg') }}"
+       href="{{ url_for('home') }}" aria-label="Giulia Monti, vai alla home">
+      <span class="logo__nome">Giulia Monti</span>
+      {% if file_statico_esiste('img/logo.svg') %}
+        <img class="logo__segno" src="{{ url_for('static', filename='img/logo.svg') }}" alt="">
+      {% endif %}
+    </a>
+
+    {# --- Navigazione desktop --- #}
+    <nav class="nav-desktop" aria-label="Navigazione principale">
+      <a class="nav-desktop__link {{ 'is-attivo' if portfolio_attivo }}" href="{{ url_for('portfolio') }}">Portfolio</a>
+      <a class="nav-desktop__link {{ 'is-attivo' if chi_sono_attivo }}" href="{{ url_for('chi_sono') }}">Chi sono</a>
+      <a class="bottone bottone--primario" href="{{ url_for('contatti') }}">Scrivimi</a>
+    </nav>
+
+    {# --- Bottone hamburger (solo mobile) --- #}
+    <button class="hamburger" type="button" aria-label="Apri il menu" aria-expanded="false" data-apri-menu>
+      {# Icona hamburger: 3 linee. Diventa X via CSS quando il menu è aperto. #}
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  {# --- Pannello di navigazione mobile (a schermo quasi intero) --- #}
+  <div class="nav-mobile" id="nav-mobile" aria-hidden="true">
+    <div class="nav-mobile__testata">
+      <span class="logo"><span class="logo__nome">Giulia Monti</span></span>
+      <button class="hamburger" type="button" aria-label="Chiudi il menu" data-chiudi-menu>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="5" y1="5" x2="19" y2="19"/>
+          <line x1="19" y1="5" x2="5" y2="19"/>
+        </svg>
+      </button>
+    </div>
+
+    <a class="nav-mobile__link {{ 'is-attivo' if portfolio_attivo }}" href="{{ url_for('portfolio') }}">Portfolio</a>
+    <a class="nav-mobile__link {{ 'is-attivo' if chi_sono_attivo }}" href="{{ url_for('chi_sono') }}">Chi sono</a>
+    <a class="bottone bottone--primario" href="{{ url_for('contatti') }}">Scrivimi</a>
+
+    <div class="nav-mobile__social">
+      {% for rete in social %}
+        <a href="{{ rete.url }}" target="_blank" rel="noopener">{{ rete.nome }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</header>

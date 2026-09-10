@@ -1,0 +1,16 @@
+{# =========================================================================
+   Macro "card_servizio" — card con bordo rosso: titolo + una riga di testo.
+   Usata sia dalla sezione "Cosa posso fare per te" (Home) sia da
+   "Fuori dal lavoro" (Chi sono): stesso identico componente.
+
+   Uso:
+     {% from "partials/card_servizio.html" import card_servizio %}
+     {{ card_servizio(servizio.nome, servizio.descrizione) }}
+   ========================================================================= #}
+
+{% macro card_servizio(titolo, descrizione) -%}
+  <article class="card-servizio">
+    <h3 class="card-servizio__titolo">{{ titolo }}</h3>
+    <p class="card-servizio__descrizione">{{ descrizione }}</p>
+  </article>
+{%- endmacro %}

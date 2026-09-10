@@ -1,0 +1,58 @@
+{# =========================================================================
+   dropdown_servizio.html — campo "Servizio" del form contatti.
+
+   NON è un <select> nativo: è un campo che, al click, apre un pannello
+   con delle chip (i servizi). Selezione MULTIPLA: se ne possono scegliere piu'
+   di una. Ogni chip scelta aggiunge un <input type="hidden" name="servizio">
+   (request.form.getlist("servizio") lato server). Il pannello resta aperto
+   finche' non lo chiude l'utente.
+
+   Comportamento apri/chiudi e sincronia con gli hidden: static/js/tendina-servizio.js
+   - Mobile : il pannello sta nel flusso e spinge giù il contenuto.
+   - Desktop: il pannello galleggia (position: absolute) senza spostare nulla.
+
+   Richiede in contesto: `opzioni_servizio` (lista di stringhe da data/contenuti.py,
+   i servizi + "Non lo so" come ultima voce).
+   ========================================================================= #}
+
+<div class="campo">
+  <span class="campo__etichetta" id="etichetta-servizio">Servizio<span class="campo__obbligatorio" aria-hidden="true">*</span></span>
+
+  <div class="dropdown-servizio" data-dropdown-servizio>
+
+    {# Il "campo" cliccabile che apre/chiude il pannello. #}
+    <button type="button"
+            class="dropdown-servizio__campo"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-labelledby="etichetta-servizio"
+            data-apri-pannello>
+      <span class="dropdown-servizio__testo placeholder" data-testo-selezione>Di che servizio hai bisogno?</span>
+      {# Chevron a TRATTO (stroke, angoli arrotondati): punta in basso, ruota a
+         180° quando il pannello e' aperto. #}
+      <span class="dropdown-servizio__freccia" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </span>
+    </button>
+
+    {# Il pannello con le chip. Nascosto finché non si apre. #}
+    <div class="dropdown-servizio__pannello" role="group" aria-labelledby="etichetta-servizio">
+      {% for nome_servizio in opzioni_servizio %}
+        <button type="button"
+                class="chip"
+                aria-pressed="false"
+                data-chip-servizio
+                data-valore="{{ nome_servizio }}">
+          <span class="chip__spunta" aria-hidden="true">✓</span>
+          <span class="chip__testo">{{ nome_servizio }}</span>
+        </button>
+      {% endfor %}
+    </div>
+
+    {# Qui il JS inserisce un <input type="hidden" name="servizio"> per ogni chip attiva. #}
+    <div data-contenitore-hidden hidden></div>
+  </div>
+</div>

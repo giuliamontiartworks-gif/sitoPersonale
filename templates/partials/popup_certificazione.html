@@ -1,0 +1,39 @@
+{# =========================================================================
+   popup_certificazione.html — un SOLO popup, incluso in ogni pagina.
+
+   È nascosto (display:none) finché non si clicca un badge certificazione.
+   I badge portano gli attributi data-* con i dati della certificazione;
+   static/js/popup-certificazioni.js li legge e riempie i campi qui sotto,
+   poi aggiunge la classe "is-aperto".
+   ========================================================================= #}
+
+<div class="popup-certificazione" id="popup-certificazione" role="dialog" aria-modal="true" aria-labelledby="popup-cert-titolo" hidden>
+  <div class="popup-certificazione__contenuto">
+
+    <button type="button" class="popup-certificazione__chiudi" aria-label="Chiudi" data-chiudi-popup>&times;</button>
+
+    <h3 id="popup-cert-titolo" data-cert-nome>Nome certificazione</h3>
+    <img class="doodle-titolo" src="{{ url_for('static', filename='img/doodle-sottolineatura.svg') }}" alt="">
+
+    <p data-cert-descrizione>Descrizione della certificazione.</p>
+
+    <dl>
+      <div class="popup-certificazione__riga">
+        <dt>Rilasciato da</dt>
+        <dd data-cert-ente>—</dd>
+      </div>
+      <div class="popup-certificazione__riga">
+        <dt>Data verifica</dt>
+        <dd data-cert-data>—</dd>
+      </div>
+      <div class="popup-certificazione__riga">
+        <dt>Durata corso</dt>
+        <dd data-cert-durata>—</dd>
+      </div>
+      <div class="popup-certificazione__riga">
+        <dt>ID di verifica</dt>
+        <dd data-cert-id>—</dd>
+      </div>
+    </dl>
+  </div>
+</div>
