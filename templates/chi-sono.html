@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% from "partials/titolo_sezione.html" import titolo_sezione %}
+{% from "partials/card_servizio.html" import card_servizio %}
+{% from "partials/badge_certificazione.html" import badge_certificazione %}
+{% from "partials/icone_social.html" import icona_social %}
+
+{% block titolo %}Chi sono — Giulia Monti, art director e illustratrice a Torino{% endblock %}
+{% block descrizione %}Giulia Monti: art director junior, illustratrice e stratega a Torino. Studentessa di Communication Design a IAAD, con esperienza in agenzia.{% endblock %}
+
+{% block contenuto %}
+
+  {# ---------------------------------------------------- INTESTAZIONE #}
+  {# Due colonne: a sinistra la foto, a destra titolo + bio + social. #}
+  <section class="sezione--compatta contenitore">
+    {# Ordine su MOBILE (colonna): titolo -> foto -> testo.
+       Su DESKTOP: foto a sinistra, titolo e testo a destra (grid-template-areas). #}
+    <div class="intro-chi-sono">
+
+      <div class="intro-chi-sono__titolo">
+        {{ titolo_sezione("Chi sono", livello=1) }}
+      </div>
+
+      {% set foto = foto_chi_sono() %}
+      {% if foto %}
+        <img class="intro-chi-sono__foto" src="{{ url_for('static', filename=foto) }}"
+             alt="Ritratto di Giulia Monti">
+      {% else %}
+        {# Segnaposto finché non viene messa la foto in static/img/
+           (nome: giulia / chi-sono / chi_sono, qualsiasi estensione). #}
+        <div class="intro-chi-sono__foto" role="img" aria-label="Foto di Giulia Monti (da caricare)">
+          <span>Foto</span>
+        </div>
+      {% endif %}
+
+      <div class="intro-chi-sono__testo">
+        <p class="intro-chi-sono__ruolo">{{ testi.sottotitolo }}</p>
+        <p class="testo-lungo">{{ testi.bio }}</p>
+
+        <p class="intro-chi-sono__social-label">{{ testi.social_label }}</p>
+        <div class="social-cerchi">
+          {% for rete in social if rete.nome in ["Instagram", "LinkedIn"] %}
+            <a class="social-cerchi__icona" href="{{ rete.url }}" target="_blank" rel="noopener"
+               aria-label="{{ rete.nome }}">{{ icona_social(rete.nome) }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  {# ------------------------------------- ESPERIENZA + FORMAZIONE (2 colonne) #}
+  <section class="sezione--compatta contenitore">
+    <div class="doppia-sezione">
+
+      <div>
+        {{ titolo_sezione("Esperienza") }}
+        {% for esp in esperienze %}
+          <div class="blocco-cv">
+            <h3 class="blocco-cv__ruolo">{{ esp.ruolo }} — {{ esp.azienda }}</h3>
+            <p class="blocco-cv__contesto">{{ esp.contesto }}</p>
+            {% if esp.descrizione %}
+              <p class="blocco-cv__descrizione">{{ esp.descrizione }}</p>
+            {% endif %}
+            {% if esp.mostra_link_agenzia %}
+              <p class="blocco-cv__link">
+                <a class="link-accento" href="{{ url_for('categoria', slug_categoria='lavori-agenzia') }}">
+                  Vedi i miei lavori d'agenzia →
+                </a>
+              </p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div>
+        {{ titolo_sezione("Formazione") }}
+        {% for corso in formazione %}
+          <div class="blocco-cv">
+            <h3 class="blocco-cv__ruolo">{{ corso.ruolo }} — {{ corso.azienda }}</h3>
+            <p class="blocco-cv__contesto">{{ corso.contesto }}</p>
+            {% if corso.descrizione %}
+              <p class="blocco-cv__descrizione">{{ corso.descrizione }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </section>
+
+
+  {# --------------------------------- CERTIFICAZIONI + LINGUE (2 colonne) #}
+  <section class="sezione--compatta contenitore">
+    <div class="doppia-sezione">
+
+      <div id="certificazioni">
+        {{ titolo_sezione("Certificazioni") }}
+        {% if certificazioni %}
+          {# Di base si vedono le prime 3; il bottone mostra le altre. #}
+          <div class="riga-badge" data-elenco-certificazioni>
+            {% for cert in certificazioni %}
+              <span class="riga-badge__voce {{ 'is-extra' if loop.index > 3 }}">
+                {{ badge_certificazione(cert) }}
+              </span>
+            {% endfor %}
+          </div>
+          {% if certificazioni|length > 3 %}
+            <button type="button" class="link-accento link-mostra-altro" data-mostra-altro
+                    aria-expanded="false">
+              Mostra altro
+            </button>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <div>
+        {{ titolo_sezione("Lingue") }}
+        <ul class="elenco-lingue">
+          {% for voce in lingue %}
+            <li><strong>{{ voce.lingua }}</strong> — <span>{{ voce.livello }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+
+  {# --------------------------------------------- FUORI DAL LAVORO #}
+  <section class="sezione contenitore">
+    {{ titolo_sezione("Cosa mi piace fare fuori dal lavoro") }}
+    <div class="griglia-due">
+      {% for interesse in interessi %}
+        {{ card_servizio(interesse.nome, interesse.descrizione) }}
+      {% endfor %}
+    </div>
+  </section>
+
+{% endblock %}

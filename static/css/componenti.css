@@ -1,0 +1,1213 @@
+/* ==========================================================================
+   componenti.css — stili dei componenti riutilizzabili del sito.
+   Ordine: bottoni, chip, badge, card, header, footer, form + dropdown,
+   popup certificazione, toast, slideshow progetto + pannello info.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   BOTTONE
+   Varianti di colore: .bottone--primario / --secondario / --su-rosso
+   Stati (hover solo desktop, active con "doodle" a scoppio) gestiti in CSS.
+   ========================================================================== */
+
+.bottone {
+  --colore-doodle: var(--colore-rosso);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spazio-s);
+  padding: 14px 28px;
+  border: 2px solid transparent;
+  border-radius: var(--raggio-pillola);
+  font-family: var(--font-principale);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform var(--transizione-veloce),
+    background-color var(--transizione-veloce),
+    border-color var(--transizione-veloce),
+    color var(--transizione-veloce);
+}
+
+/* --- Variante primario: sfondo rosso, testo bianco --- */
+.bottone--primario {
+  background-color: var(--colore-rosso);
+  color: var(--colore-bianco);
+  border-color: var(--colore-rosso);
+}
+
+/* --- Variante secondario: bordo rosso, testo rosso, sfondo trasparente --- */
+.bottone--secondario {
+  background-color: transparent;
+  color: var(--colore-rosso);
+  border-color: var(--colore-rosso);
+}
+
+/* --- Variante su-rosso: sfondo bianco, testo rosso (per il footer) --- */
+.bottone--su-rosso {
+  background-color: var(--colore-bianco);
+  color: var(--colore-rosso);
+  border-color: var(--colore-bianco);
+  --colore-doodle: var(--colore-bianco);
+}
+
+/* Hover: SOLO su dispositivi con vero puntatore. Il bottone si ingrandisce. */
+@media (hover: hover) {
+  .bottone:hover {
+    transform: scale(1.06);
+  }
+  .bottone--secondario:hover {
+    background-color: var(--colore-rosso);
+    color: var(--colore-bianco);
+  }
+}
+
+/* Active / premuto: si rimpicciolisce e si scurisce. */
+.bottone:active {
+  transform: scale(0.97);
+}
+.bottone--primario:active {
+  background-color: var(--colore-rosso-scuro);
+  border-color: var(--colore-rosso-scuro);
+}
+.bottone--secondario:active {
+  background-color: var(--colore-rosso-scuro);
+  border-color: var(--colore-rosso-scuro);
+  color: var(--colore-bianco);
+}
+
+/* "Doodle" a scoppio: 3 trattini diagonali che compaiono dall'angolo
+   in alto a destra quando il bottone e' premuto. E' uno pseudo-elemento
+   con un piccolo SVG inline (currentColor -> colore del doodle). */
+.bottone::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 26px;
+  height: 26px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23EA0031' stroke-width='2.5' stroke-linecap='round'%3E%3Cline x1='14' y1='10' x2='20' y2='4'/%3E%3Cline x1='11' y1='5' x2='14' y2='1'/%3E%3Cline x1='19' y1='13' x2='23' y2='10'/%3E%3C/svg%3E");
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity var(--transizione-veloce), transform var(--transizione-veloce);
+  pointer-events: none;
+}
+.bottone--su-rosso::after {
+  /* Sul footer rosso i trattini devono essere bianchi. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2.5' stroke-linecap='round'%3E%3Cline x1='14' y1='10' x2='20' y2='4'/%3E%3Cline x1='11' y1='5' x2='14' y2='1'/%3E%3Cline x1='19' y1='13' x2='23' y2='10'/%3E%3C/svg%3E");
+}
+.bottone:active::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Bottone disabilitato (es. "Invia messaggio" con form incompleto). */
+.bottone:disabled,
+.bottone[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.bottone:disabled:hover,
+.bottone:disabled:active {
+  transform: none;
+}
+.bottone:disabled::after {
+  display: none;   /* niente doodle a scoppio quando e' disabilitato */
+}
+
+/* Rispetta chi ha chiesto meno animazioni. */
+@media (prefers-reduced-motion: reduce) {
+  .bottone { transition: background-color var(--transizione-veloce); }
+  .bottone:hover,
+  .bottone:active { transform: none; }
+}
+
+/* Gruppo di bottoni affiancati (hero, pagina grazie). */
+.gruppo-bottoni {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-m);
+}
+/* Bottoni centrati: dentro una sezione .centrato, oppure con la classe
+   esplicita .gruppo-bottoni--centrato (usata sotto "Progetti in evidenza"
+   e sotto i "Servizi", dove la sezione non e' tutta centrata). */
+.centrato .gruppo-bottoni,
+.gruppo-bottoni--centrato {
+  justify-content: center;
+}
+
+
+/* ==========================================================================
+   CHIP selezionabile
+   Usata nel multi-select "Servizio" (multi) e come tab-filtro categoria (singola).
+   ========================================================================== */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spazio-xs);
+  padding: 9px 18px;
+  border: 2px solid var(--colore-rosso);
+  border-radius: var(--raggio-pillola);
+  background-color: transparent;
+  color: var(--colore-rosso);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color var(--transizione-veloce), color var(--transizione-veloce);
+}
+
+/* La spunta a sinistra del testo: nascosta finche' la chip non e' selezionata. */
+.chip__spunta {
+  width: 0;
+  overflow: hidden;
+  transition: width var(--transizione-veloce);
+}
+
+/* Stato selezionato: sfondo pieno rosso, testo bianco, spunta visibile. */
+.chip.is-selezionata,
+.chip[aria-pressed="true"] {
+  background-color: var(--colore-rosso);
+  color: var(--colore-bianco);
+}
+.chip.is-selezionata .chip__spunta,
+.chip[aria-pressed="true"] .chip__spunta {
+  width: 1em;
+}
+
+@media (hover: hover) {
+  .chip:hover {
+    background-color: var(--colore-lilla-chiaro);
+  }
+  .chip.is-selezionata:hover,
+  .chip[aria-pressed="true"]:hover {
+    background-color: var(--colore-rosso-scuro);
+  }
+}
+
+/* Riga di tab-filtro scrollabile in orizzontale su mobile. */
+.tab-filtro {
+  display: flex;
+  gap: var(--spazio-s);
+  flex-wrap: wrap;
+  margin-bottom: var(--spazio-xl);
+}
+
+
+/* ==========================================================================
+   BADGE certificazione — pillola bianca, bordo rosso, testo sottolineato.
+   ========================================================================== */
+
+.badge-certificazione {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  border: 2px solid var(--colore-rosso);
+  border-radius: var(--raggio-pillola);
+  background-color: var(--colore-bianco);
+  color: var(--colore-rosso);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .badge-certificazione:hover {
+    background-color: var(--colore-rosso);
+    color: var(--colore-bianco);
+  }
+}
+
+.riga-badge {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-s);
+}
+
+/* "Mostra altro" per le certificazioni (pagina Chi sono): di base si vedono
+   solo le prime 3, le altre sono nascoste finché non si clicca il bottone. */
+.riga-badge__voce {
+  display: contents;
+}
+.riga-badge__voce.is-extra {
+  display: none;
+}
+.riga-badge.is-espanso .riga-badge__voce.is-extra {
+  display: contents;
+}
+
+.link-mostra-altro {
+  display: inline-block;
+  margin-top: var(--spazio-m);
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+
+/* ==========================================================================
+   CARD PROGETTO
+   Varianti: default (con disciplina sopra il titolo) e .card-progetto--solo-nome.
+   ========================================================================== */
+
+.card-progetto__link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-progetto__media {
+  display: block;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--raggio-card);
+  overflow: hidden;
+  background-color: var(--colore-lilla);   /* segnaposto se l'immagine manca */
+}
+
+.card-progetto__media img {
+  width: 100%;
+  height: 100%;
+  /* cover: nelle anteprime (card) la foto riempie tutta la card.
+     Nella pagina del progetto invece si vede intera (contain). */
+  object-fit: cover;
+  transition: transform var(--transizione-media);
+}
+
+/* Segnaposto mostrato quando il file immagine non esiste ancora. */
+.segnaposto-immagine {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spazio-m);
+  text-align: center;
+  background-color: var(--colore-lilla);
+  color: var(--colore-testo);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.card-progetto__disciplina {
+  display: block;
+  margin-top: var(--spazio-s);
+  color: var(--colore-rosso);
+  font-size: 0.9rem;
+  font-weight: 500;
+  /* Niente maiuscolo: la disciplina si scrive come nei dati
+     ("Illustrazione", "Lavori d'agenzia", ...). */
+}
+
+.card-progetto__titolo {
+  display: block;
+  margin-top: var(--spazio-xs);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .card-progetto__link:hover .card-progetto__media img {
+    transform: scale(1.05);
+  }
+  .card-progetto__link:hover .card-progetto__titolo {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* Card grande "vetrina" in Home: SOLO su desktop e' piu' ampia e col titolo
+   piu' grande. Su mobile e' identica alle altre (stesso rapporto, stesso titolo). */
+@media (min-width: 960px) {
+  .card-progetto--vetrina .card-progetto__media {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--raggio-card-grande);
+  }
+  .card-progetto--vetrina .card-progetto__titolo {
+    font-size: 1.5rem;
+  }
+}
+
+
+/* ==========================================================================
+   CARD SERVIZIO — bordo rosso, niente sfondo pieno, titolo + descrizione.
+   Usata anche dalla sezione "Fuori dal lavoro" in Chi sono.
+   ========================================================================== */
+
+.card-servizio {
+  padding: var(--spazio-l);
+  border: 2px solid var(--colore-rosso);
+  border-radius: var(--raggio-card);
+  background-color: transparent;
+}
+
+.card-servizio__titolo {
+  margin: 0 0 var(--spazio-xs);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.card-servizio__descrizione {
+  margin: 0;
+  color: var(--colore-testo-tenue);
+  font-size: 0.98rem;
+}
+
+
+/* ==========================================================================
+   CAROSELLO orizzontale (Portfolio: 3 card + freccia "vedi tutti").
+   ========================================================================== */
+
+/* MOBILE: carosello che scorre in orizzontale, con la card successiva che
+   "sbircia" dal bordo (flex-basis 78%). */
+.carosello {
+  display: flex;
+  gap: var(--spazio-l);
+  overflow-x: auto;
+  padding-bottom: var(--spazio-s);
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.carosello > .card-progetto {
+  flex: 0 0 78%;
+  max-width: 320px;
+  scroll-snap-align: start;
+}
+
+/* Freccia rossa circolare in fondo al carosello: porta alla pagina categoria. */
+.freccia-vedi-tutti {
+  flex: 0 0 auto;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--colore-rosso);
+  color: var(--colore-bianco);
+  text-decoration: none;
+  font-size: 1.4rem;
+  /* Durante il trascinamento la freccia segue subito il gesto (nessuna
+     transizione sul transform). Al rilascio, carosello-portfolio.js aggiunge
+     .is-tornando per far tornare la freccia a riposo in modo morbido. */
+  transition: transform 0s, background-color var(--transizione-veloce);
+}
+
+.freccia-vedi-tutti.is-tornando {
+  transition: transform 0.35s var(--ease-morbido), background-color var(--transizione-veloce);
+}
+
+@media (hover: hover) {
+  .freccia-vedi-tutti:hover {
+    background-color: var(--colore-rosso-scuro);
+  }
+}
+
+/* DESKTOP: niente scroll orizzontale. Le 3 card riempiono la riga come nelle
+   altre sezioni del sito, con la freccia "vedi tutti" in fondo. Cosi', quando
+   si allarga la finestra, il layout diventa subito quello pieno (non resta
+   "bloccato" alla misura mobile). */
+@media (min-width: 960px) {
+  .carosello {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    align-items: start;
+    gap: var(--spazio-l);
+    overflow: visible;
+  }
+  .carosello > .card-progetto {
+    max-width: none;
+  }
+}
+
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+
+.intestazione {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  /* Header bianca (lo sfondo lilla chiaro ora e' usato dallo slideshow). */
+  background-color: var(--colore-bianco);
+  border-bottom: 1px solid var(--colore-lilla-chiaro);
+}
+
+.intestazione__interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spazio-m);
+  padding-top: var(--spazio-m);
+  padding-bottom: var(--spazio-m);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-logo);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--colore-rosso);   /* il nome del logo e' rosso */
+  text-decoration: none;
+  line-height: 1;
+}
+
+/* Il logo ha due forme:
+   - .logo__nome  : il nome scritto (font "Neulis Cursive")
+   - .logo__segno : il simbolo (static/img/logo.png)
+   Regola voluta da Giulia: su DESKTOP si vede il nome, su MOBILE il simbolo.
+   La classe .logo--con-segno viene messa dal template solo se il file
+   logo.png esiste davvero; senza il file si vede sempre il nome. */
+.logo__segno {
+  display: none;
+}
+
+.logo--con-segno .logo__nome {
+  display: none;
+}
+.logo--con-segno .logo__segno {
+  display: inline-block;
+  height: 30px;
+  width: auto;
+}
+
+@media (min-width: 960px) {
+  .logo--con-segno .logo__nome {
+    display: inline;
+  }
+  .logo--con-segno .logo__segno {
+    display: none;
+  }
+}
+
+/* Navigazione desktop: nascosta su mobile. */
+.nav-desktop {
+  display: none;
+}
+
+@media (min-width: 960px) {
+  .nav-desktop {
+    display: flex;
+    align-items: center;
+    gap: var(--spazio-xl);
+  }
+}
+
+.nav-desktop__link,
+.nav-mobile__link {
+  position: relative;
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--colore-testo);
+  padding-bottom: var(--spazio-xs);
+}
+
+/* La voce della pagina corrente ha la sottolineatura "doodle" sotto. */
+.nav-desktop__link.is-attivo::after,
+.nav-mobile__link.is-attivo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 100%;
+  height: 12px;
+  background-image: url("../img/doodle-sottolineatura.svg");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: contain;
+}
+
+/* Bottone hamburger: visibile solo su mobile. */
+.hamburger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--colore-testo);
+}
+
+@media (min-width: 960px) {
+  .hamburger {
+    display: none;
+  }
+}
+
+/* Pannello di navigazione mobile a (quasi) schermo intero. */
+.nav-mobile {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spazio-l);
+  padding: var(--spazio-xl) var(--spazio-l);
+  background-color: var(--colore-bianco);
+  transform: translateX(100%);
+  transition: transform var(--transizione-media);
+}
+
+.nav-mobile.is-aperto {
+  transform: translateX(0);
+}
+
+.nav-mobile__testata {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-mobile__link {
+  font-size: 1.4rem;
+  /* Larghezza pari al testo: cosi' l'ondina (::after con width:100%) sta
+     esattamente sotto la parola e non centrata su tutto il pannello. */
+  align-self: flex-start;
+}
+
+.nav-mobile__social {
+  margin-top: auto;
+  display: flex;
+  gap: var(--spazio-l);
+}
+
+.nav-mobile__social a {
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--colore-rosso);
+}
+
+@media (min-width: 960px) {
+  .nav-mobile {
+    display: none;
+  }
+}
+
+
+/* ==========================================================================
+   FOOTER — sfondo rosso pieno, contenuto centrato.
+   ========================================================================== */
+
+.pie-pagina {
+  flex-shrink: 0;
+  background-color: var(--colore-lilla-chiaro);
+  color: var(--colore-testo);
+  text-align: center;
+  padding: var(--spazio-sezione) var(--spazio-l);
+}
+
+.pie-pagina__logo {
+  display: inline-block;
+}
+
+/* Il logo (SVG rosso) sul footer lilla: resta rosso, com'e'. */
+.pie-pagina__logo img {
+  height: 44px;
+  width: auto;
+}
+
+.pie-pagina__titolo {
+  /* L'a-capo e' un <br> nel template: niente max-width che spezzi altrove. */
+  margin: var(--spazio-l) auto var(--spazio-xl);
+  color: var(--colore-testo);
+}
+
+.pie-pagina__social {
+  display: flex;
+  justify-content: center;
+  gap: var(--spazio-l);
+  margin-top: var(--spazio-xl);
+}
+
+.pie-pagina__social a {
+  color: var(--colore-testo);
+  text-decoration: underline;
+  text-decoration-color: var(--colore-rosso);
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+
+
+/* ==========================================================================
+   FORM — campi testo, textarea, e dropdown custom "Servizio".
+   ========================================================================== */
+
+.modulo {
+  max-width: 720px;
+}
+
+.campo {
+  margin-bottom: var(--spazio-l);
+}
+
+.campo__etichetta {
+  display: block;
+  margin-bottom: var(--spazio-s);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* Asterisco dei campi obbligatori. */
+.campo__obbligatorio {
+  margin-left: 2px;
+  color: var(--colore-rosso);
+}
+
+.campo__input,
+.campo__textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--colore-bordo-campo);
+  border-radius: var(--raggio-campo);
+  background-color: var(--colore-bianco);
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--colore-testo);
+  transition: border-color var(--transizione-veloce);
+}
+
+.campo__input::placeholder,
+.campo__textarea::placeholder {
+  color: var(--colore-placeholder);
+}
+
+/* Focus: il bordo diventa rosso. */
+.campo__input:focus,
+.campo__textarea:focus {
+  outline: none;
+  border-color: var(--colore-rosso);
+}
+
+.campo__textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* Due campi affiancati su desktop (Nome+Email, Telefono+Servizio). */
+.campo-riga {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spazio-l);
+}
+
+@media (min-width: 960px) {
+  .campo-riga {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.nota-modulo {
+  margin-top: var(--spazio-s);
+  color: var(--colore-testo-tenue);
+  font-size: 0.9rem;
+}
+
+/* --- Dropdown custom "Servizio" (multi-selezione a chip) ---------------- */
+
+.dropdown-servizio {
+  position: relative;
+}
+
+/* Il "campo" cliccabile che apre il pannello. */
+.dropdown-servizio__campo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spazio-s);
+  padding: 14px 16px;
+  border: 2px solid var(--colore-bordo-campo);
+  border-radius: var(--raggio-campo);
+  background-color: var(--colore-bianco);
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--colore-testo);
+  text-align: left;
+}
+
+.dropdown-servizio__campo .placeholder {
+  color: var(--colore-placeholder);
+}
+
+.dropdown-servizio__freccia {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--colore-testo);
+  transition: transform var(--transizione-veloce);
+}
+
+/* Quando il pannello e' aperto la freccia si capovolge (punta in alto). */
+.dropdown-servizio.is-aperto .dropdown-servizio__freccia {
+  transform: rotate(180deg);
+}
+/* Aperto: cambia SOLO il colore del bordo, l'arrotondamento resta intatto. */
+.dropdown-servizio.is-aperto .dropdown-servizio__campo {
+  border-color: var(--colore-rosso);
+}
+
+/* Il pannello con le chip. Nascosto di default. E' un riquadro a se',
+   con i suoi angoli arrotondati, staccato di poco dal campo. */
+.dropdown-servizio__pannello {
+  display: none;
+  flex-wrap: wrap;
+  gap: var(--spazio-s);
+  margin-top: var(--spazio-s);
+  padding: var(--spazio-m);
+  border: 2px solid var(--colore-rosso);
+  border-radius: var(--raggio-campo);
+  background-color: var(--colore-bianco);
+}
+
+.dropdown-servizio.is-aperto .dropdown-servizio__pannello {
+  display: flex;
+}
+
+/* MOBILE: il pannello sta nel flusso e spinge giu' il contenuto (default).
+   DESKTOP: il pannello GALLEGGIA sopra il contenuto, senza spostare nulla.
+   (Le selezioni accidentali sono evitate dalla chiusura automatica del
+   pannello alla scelta / al focus di un altro campo, in tendina-servizio.js.) */
+@media (min-width: 960px) {
+  .dropdown-servizio.is-aperto .dropdown-servizio__pannello {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    box-shadow: var(--ombra-morbida);
+  }
+}
+
+
+/* ==========================================================================
+   POPUP CERTIFICAZIONE — overlay centrato con scrim scuro.
+   ========================================================================== */
+
+.popup-certificazione {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spazio-l);
+  background-color: rgba(30, 15, 45, 0.55);
+}
+
+.popup-certificazione.is-aperto {
+  display: flex;
+}
+
+.popup-certificazione__contenuto {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  padding: var(--spazio-xl);
+  border-radius: var(--raggio-card-grande);
+  background-color: var(--colore-bianco);
+  box-shadow: var(--ombra-popup);
+}
+
+.popup-certificazione__chiudi {
+  position: absolute;
+  top: var(--spazio-m);
+  right: var(--spazio-m);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--colore-lilla-chiaro);
+  color: var(--colore-testo);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.popup-certificazione__riga {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spazio-m);
+  padding: var(--spazio-s) 0;
+  border-top: 1px solid var(--colore-lilla-chiaro);
+  font-size: 0.95rem;
+}
+
+.popup-certificazione__riga dt {
+  color: var(--colore-testo-tenue);
+  margin: 0;
+}
+
+.popup-certificazione__riga dd {
+  margin: 0;
+  font-weight: 500;
+  text-align: right;
+}
+
+
+/* ==========================================================================
+   TOAST "Email copiata!" — pillola scura in basso al centro.
+   ========================================================================== */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--spazio-xl);
+  transform: translateX(-50%) translateY(20px);
+  z-index: 120;
+  display: none;
+  align-items: center;
+  gap: var(--spazio-s);
+  padding: 12px 20px;
+  border-radius: var(--raggio-pillola);
+  background-color: var(--colore-testo);
+  color: var(--colore-bianco);
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity var(--transizione-media), transform var(--transizione-media);
+}
+
+.toast.is-visibile {
+  display: flex;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast__pallino {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--colore-verde-ok);
+}
+
+
+/* ==========================================================================
+   RIGA EMAIL + COPIA (pagina Contatti)
+   ========================================================================== */
+
+/* Riga con la pillola email + i pulsanti social, tutti in fila. */
+.modi-contatto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spazio-m);
+}
+
+/* Pillola email: bordo rosso, indirizzo a sinistra, bottone "Copia" (pieno)
+   dentro la stessa pillola a destra. */
+.pillola-email {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spazio-s);
+  padding: 4px 4px 4px 20px;
+  border: 2px solid var(--colore-rosso);
+  border-radius: var(--raggio-pillola);
+}
+
+.pillola-email__indirizzo {
+  color: var(--colore-testo);
+  font-weight: 500;
+}
+
+.pillola-email__copia {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: var(--raggio-pillola);
+  background-color: var(--colore-rosso);
+  color: var(--colore-bianco);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: background-color var(--transizione-veloce);
+}
+
+@media (hover: hover) {
+  .pillola-email__copia:hover {
+    background-color: var(--colore-rosso-scuro);
+  }
+}
+
+
+/* ==========================================================================
+   SLIDESHOW PROGETTO + PANNELLO INFO
+
+   Struttura (vedi progetto.html):
+     <section class="progetto-slideshow" data-slideshow>   <- qui va "is-info-aperto"
+       <div class="slideshow"> ...immagini + controlli... </div>
+       <div class="pannello-info"> ...maniglia + contenuti... </div>
+     </section>
+   ========================================================================== */
+
+.progetto-slideshow {
+  position: relative;
+  /* Poco stacco sotto: la sezione "Altri progetti" deve stare vicina
+     alla card immagini. Lo spazio vero e' dato dal padding di quella sezione. */
+  margin-bottom: var(--spazio-l);
+  /* Il pannello Info, aprendosi/chiudendosi, si muove SOLO dentro quest'area:
+     tutto quello che esce dai bordi della card immagini viene ritagliato,
+     quindi il pannello non scivola mai sopra "Altri progetti". */
+  overflow: hidden;
+}
+
+/* La card immagini ha un'altezza FISSA: NON cambia mai, ne' quando il pannello
+   Info si apre ne' quando si chiude. Cosi' non ci sono "salti" o pezzi bianchi.
+   Il pannello e' solo un overlay dentro quest'area. */
+.slideshow {
+  position: relative;
+  width: 100%;
+  height: 64vh;
+  /* Sfondo lilla chiaro: fa da "cornice" attorno alla foto (che e' contain). */
+  background-color: var(--colore-lilla-chiaro);
+  overflow: hidden;
+}
+
+@media (min-width: 960px) {
+  .slideshow {
+    height: 70vh;
+  }
+}
+
+/* Ogni slide riempie la card; mostriamo solo quella attiva. */
+.slideshow__slide {
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+.slideshow__slide.is-attiva {
+  display: block;
+}
+.slideshow__slide img,
+.slideshow__video {
+  width: 100%;
+  height: 100%;
+  /* contain = foto/video si vedono SEMPRE per intero (mai tagliati). Lo spazio
+     che avanza attorno resta dello sfondo lilla dello slideshow. */
+  object-fit: contain;
+}
+
+/* Frecce prev/next circolari bianche ai lati. */
+.slideshow__freccia {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--colore-bianco);
+  color: var(--colore-testo);
+  font-size: 1.3rem;
+  line-height: 1;
+  /* Ombra morbida: le frecce si staccano dallo sfondo lilla chiaro. */
+  box-shadow: var(--ombra-morbida);
+}
+.slideshow__freccia--prec { left: var(--spazio-m); }
+.slideshow__freccia--succ { right: var(--spazio-m); }
+
+/* Contatore "1 / N" in basso al centro. */
+.slideshow__contatore {
+  position: absolute;
+  left: 50%;
+  bottom: var(--spazio-m);
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: var(--raggio-pillola);
+  background-color: rgba(43, 18, 64, 0.6);
+  color: var(--colore-bianco);
+  font-size: 0.85rem;
+}
+
+/* Pillola "Torna a [Categoria]" in alto a sinistra (meno prominente). */
+.slideshow__ritorno {
+  position: absolute;
+  top: var(--spazio-m);
+  left: var(--spazio-m);
+  padding: 8px 16px;
+  border-radius: var(--raggio-pillola);
+  background-color: var(--colore-bianco);
+  color: var(--colore-testo);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: var(--ombra-morbida);
+}
+
+/* Bottone "Info" rosso pieno in alto a destra. */
+.slideshow__info-toggle {
+  position: absolute;
+  top: var(--spazio-m);
+  right: var(--spazio-m);
+  z-index: 6;   /* sempre sopra al pannello Info */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spazio-xs);
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--raggio-pillola);
+  background-color: var(--colore-rosso);
+  color: var(--colore-bianco);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* La freccia e' un chevron a TRATTO (SVG con stroke, non riempito).
+   A riposo (pannello chiuso) punta in ALTO: invita a "tirare su" il pannello.
+   Ad apertura ruota di 180 -> punta in BASSO: invita a richiudere. */
+.slideshow__info-toggle .freccia {
+  display: inline-flex;
+  transition: transform var(--transizione-veloce);
+}
+.progetto-slideshow.is-info-aperto .slideshow__info-toggle .freccia {
+  transform: rotate(180deg);
+}
+
+/* --- Pannello Info ----------------------------------------------------------
+   Il contenuto e' SEMPRE nell'HTML (per la SEO): si mostra/nasconde con la
+   classe "is-info-aperto" sul contenitore .progetto-slideshow.
+
+   Aperto: OVERLAY in "position: absolute" ANCORATO dentro .progetto-slideshow,
+   dalla striscia d'immagine (top) fino in fondo alla card (bottom). Non entra
+   nel flusso della pagina: "Altri progetti" resta esattamente dov'e'.
+   Chiudendosi scivola giu' con translateY e SPARISCE ritagliato dal bordo
+   inferiore della card (overflow: hidden sul contenitore). */
+
+.pannello-info {
+  display: none;
+}
+
+.progetto-slideshow.is-info-aperto .pannello-info {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 16vh;      /* la striscia d'immagine che resta visibile sopra */
+  bottom: 0;
+  z-index: 5;
+  overflow-y: auto;   /* se il contenuto e' piu' alto, scorre DENTRO il pannello */
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--spazio-xl);
+  background-color: var(--colore-crema);
+  border-top-left-radius: var(--raggio-card-grande);
+  border-top-right-radius: var(--raggio-card-grande);
+  /* L'ENTRATA, la CHIUSURA e il TRASCINAMENTO del pannello sono gestiti
+     interamente da slideshow-progetto.js con transizioni inline sul transform:
+     qui NON ci deve essere ne' animation ne' transition sul transform, altrimenti
+     "vincerebbero" sul trascinamento e la maniglia non seguirebbe piu' il dito. */
+}
+
+@media (max-width: 959px) {
+  .progetto-slideshow.is-info-aperto .pannello-info {
+    top: 13vh;
+  }
+}
+
+/* La "maniglia": il trattino grigio in alto al centro. Si TRASCINA verso il
+   basso (come uno slider) per chiudere il pannello — vedi slideshow-progetto.js.
+   touch-action: none = il browser non intercetta il trascinamento come scroll. */
+.pannello-info__maniglia {
+  display: block;
+  width: 100%;
+  padding: 16px 0;
+  border: none;
+  /* Resta agganciata in alto mentre il contenuto del pannello scorre. */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--colore-crema);
+  border-top-left-radius: var(--raggio-card-grande);
+  border-top-right-radius: var(--raggio-card-grande);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.pannello-info__maniglia:active {
+  cursor: grabbing;
+}
+.pannello-info__maniglia::before {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 6px;
+  margin: 0 auto;
+  border-radius: var(--raggio-pillola);
+  background-color: rgba(43, 18, 64, 0.2);
+}
+@media (hover: hover) {
+  .pannello-info__maniglia:hover::before {
+    background-color: rgba(43, 18, 64, 0.38);
+  }
+}
+
+.pannello-info__chip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-s);
+  margin: var(--spazio-m) 0 var(--spazio-l);
+}
+
+/* Chip informativa NON cliccabile del pannello (disciplina, anno, "Con AI"...).
+   Come nel Figma: bordo rosso, testo rosso, sfondo trasparente. */
+.chip-info {
+  display: inline-flex;
+  padding: 7px 16px;
+  border: 2px solid var(--colore-rosso);
+  border-radius: var(--raggio-pillola);
+  background-color: transparent;
+  color: var(--colore-rosso);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.pannello-info__overview {
+  max-width: 62ch;
+  margin-bottom: var(--spazio-xl);
+}
+
+/* Le righe etichetta + valore: 1 colonna su mobile, 2 su tablet, 4 su desktop. */
+.pannello-info__dettagli {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spazio-l);
+}
+
+.pannello-info__dettagli dt {
+  margin-bottom: var(--spazio-xs);
+  color: var(--colore-rosso);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.pannello-info__dettagli dd {
+  margin: 0;
+  color: var(--colore-testo);
+}
+
+@media (min-width: 720px) {
+  .pannello-info__dettagli {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1040px) {
+  .pannello-info__dettagli {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--spazio-xl);
+  }
+}

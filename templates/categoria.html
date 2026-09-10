@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% from "partials/titolo_sezione.html" import titolo_sezione %}
+{% from "partials/card_progetto.html" import card_progetto %}
+
+{% block titolo %}{{ categoria.nome }} — Portfolio di Giulia Monti{% endblock %}
+{% block descrizione %}{{ categoria.descrizione }}{% endblock %}
+
+{% block contenuto %}
+
+  <section class="sezione--compatta contenitore">
+
+    <a class="link-ritorno" href="{{ url_for('portfolio') }}">&larr; Torna al portfolio</a>
+
+    {{ titolo_sezione(categoria.nome, livello=1) }}
+
+    <p class="testo-lungo">{{ categoria.descrizione }}</p>
+
+    {# --- Tab-filtro: "Tutti" + le 5 categorie. Selezione singola: naviga. --- #}
+    <nav class="tab-filtro" aria-label="Filtra per categoria">
+      <a class="chip" href="{{ url_for('portfolio') }}">
+        <span class="chip__spunta" aria-hidden="true">✓</span>
+        <span>Tutti</span>
+      </a>
+      {% for cat in categorie %}
+        <a class="chip {{ 'is-selezionata' if cat.slug == categoria.slug }}"
+           href="{{ url_for('categoria', slug_categoria=cat.slug) }}"
+           {% if cat.slug == categoria.slug %}aria-current="page"{% endif %}>
+          <span class="chip__spunta" aria-hidden="true">✓</span>
+          <span>{{ cat.nome }}</span>
+        </a>
+      {% endfor %}
+    </nav>
+
+    {# --- Griglia progetti (variante "solo nome": la disciplina è già il titolo). --- #}
+    {% if progetti %}
+      <div class="griglia-progetti">
+        {% for progetto in progetti %}
+          {{ card_progetto(progetto, con_tag=false) }}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Non ci sono ancora progetti pubblicati in questa categoria.</p>
+    {% endif %}
+
+  </section>
+
+{% endblock %}

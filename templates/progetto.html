@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% from "partials/titolo_sezione.html" import titolo_sezione %}
+{% from "partials/card_progetto.html" import card_progetto %}
+
+{% block titolo %}{{ progetto.nome }} — Progetto di Giulia Monti{% endblock %}
+{% block descrizione %}{{ progetto.overview }}{% endblock %}
+{% block classe_body %}pagina-progetto{% endblock %}
+
+{% block contenuto %}
+
+  {# =================================================== SLIDESHOW + PANNELLO INFO
+     "is-info-aperto" viene messa/tolta da slideshow-progetto.js sul contenitore
+     [data-slideshow]: apre il pannello e riduce l'immagine a una striscia. #}
+  <section class="progetto-slideshow" data-slideshow
+           aria-label="Immagini del progetto {{ progetto.nome }}">
+
+    {# Immagini E video vengono letti a runtime dalla cartella
+       static/img/progetti/<slug>/ (vedi media_progetto in app.py).
+       Se la cartella e' vuota, mostriamo 3 slide segnaposto cosi' si vede
+       comunque tutto lo slideshow (frecce e contatore compresi). #}
+    {% set media_reali = media_progetto(progetto.slug) %}
+    {% set slide_media = media_reali or [none, none, none] %}
+
+    <div class="slideshow">
+      {# --- Le slide. La prima e' visibile, le altre nascoste (gestite dal JS). --- #}
+      {% for media in slide_media %}
+        <div class="slideshow__slide {{ 'is-attiva' if loop.first }}" data-slide>
+          {% if media and media.video %}
+            <video class="slideshow__video" controls preload="metadata" playsinline
+                   aria-label="{{ progetto.nome }} — video {{ loop.index }} di {{ slide_media|length }}">
+              <source src="{{ url_for('static', filename=media.percorso) }}"
+                      type="video/{{ 'webm' if media.percorso.endswith('.webm') else 'mp4' }}">
+            </video>
+          {% elif media %}
+            <img src="{{ url_for('static', filename=media.percorso) }}"
+                 alt="{{ progetto.nome }} — immagine {{ loop.index }} di {{ slide_media|length }}">
+          {% else %}
+            <span class="segnaposto-immagine">{{ progetto.nome }} — immagine {{ loop.index }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      {# --- Controlli sopra lo slideshow --- #}
+      {% if prima_categoria %}
+        {# href = pagina categoria (fallback per SEO / visita diretta).
+           Se l'utente arriva da un'altra pagina del sito, slideshow-progetto.js
+           trasforma questo link in un "torna indietro" verso quella pagina. #}
+        <a class="slideshow__ritorno" data-ritorno
+           href="{{ url_for('categoria', slug_categoria=prima_categoria.slug) }}">
+          <span data-ritorno-testo>&larr; Torna a {{ prima_categoria.nome }}</span>
+        </a>
+      {% endif %}
+
+      <button type="button" class="slideshow__info-toggle" aria-expanded="false" data-info-toggle>
+        Info
+        {# Chevron a TRATTO che punta in alto (ruota quando il pannello e' aperto). #}
+        <span class="freccia">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 15 12 9 18 15"/>
+          </svg>
+        </span>
+      </button>
+
+      {% if slide_media|length > 1 %}
+        <button type="button" class="slideshow__freccia slideshow__freccia--prec" data-slide-prec aria-label="Precedente">&larr;</button>
+        <button type="button" class="slideshow__freccia slideshow__freccia--succ" data-slide-succ aria-label="Successiva">&rarr;</button>
+        <p class="slideshow__contatore" data-contatore>1 / {{ slide_media|length }}</p>
+      {% endif %}
+    </div>
+
+    {# ===================== PANNELLO INFO (sempre nell'HTML, per la SEO) ===== #}
+    <div class="pannello-info" data-pannello-info>
+
+      {# La "maniglia": il trattino grigio in alto. Si TRASCINA verso il basso
+         per chiudere il pannello (vedi slideshow-progetto.js). #}
+      <button type="button" class="pannello-info__maniglia" data-chiudi-info aria-label="Trascina giù per chiudere le informazioni"></button>
+
+      <div class="contenitore">
+        {# Titolo principale della pagina progetto (l'unico <h1>). #}
+        {{ titolo_sezione(progetto.nome, livello=1) }}
+
+        {# --- Chip informative (NON cliccabili) --- #}
+        <div class="pannello-info__chip">
+          {% for slug_cat in progetto.categorie %}
+            <span class="chip-info">{{ nome_disciplina(slug_cat) }}</span>
+          {% endfor %}
+          <span class="chip-info">{{ progetto.contesto }}</span>
+          <span class="chip-info">{{ progetto.anno }}</span>
+          <span class="chip-info">{{ "Con AI" if progetto.ai_used else "Senza AI" }}</span>
+        </div>
+
+        <p class="pannello-info__overview">{{ progetto.overview }}</p>
+
+        {# --- Righe etichetta + valore. "Risultato" e "Strumenti AI" compaiono
+               solo se il progetto li ha. --- #}
+        <dl class="pannello-info__dettagli">
+          <div>
+            <dt>Insight</dt>
+            <dd>{{ progetto.insight }}</dd>
+          </div>
+          <div>
+            <dt>Target</dt>
+            <dd>{{ progetto.target }}</dd>
+          </div>
+          <div>
+            <dt>Cliente</dt>
+            <dd>{{ progetto.cliente if progetto.cliente else "Progetto personale — nessun cliente" }}</dd>
+          </div>
+          <div>
+            <dt>Strumenti</dt>
+            <dd>{{ progetto.strumenti | join(", ") }}</dd>
+          </div>
+          {% if progetto.ai_strumenti %}
+            <div>
+              <dt>Strumenti AI</dt>
+              <dd>{{ progetto.ai_strumenti | join(", ") }}</dd>
+            </div>
+          {% endif %}
+          {% if progetto.risultato %}
+            <div>
+              <dt>Risultato</dt>
+              <dd>{{ progetto.risultato }}</dd>
+            </div>
+          {% endif %}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+
+  {# ============================================================ ALTRI PROGETTI #}
+  {% if correlati %}
+    <section class="sezione--compatta contenitore">
+      {{ titolo_sezione("Altri progetti") }}
+      <div class="altri-progetti__griglia">
+        {% for altro in correlati %}
+          {{ card_progetto(altro) }}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+{% endblock %}

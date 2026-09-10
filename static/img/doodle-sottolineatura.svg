@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 18" fill="none">
+  <!-- Sottolineatura "disegnata a mano". Il viewBox ha margine sopra e sotto
+       (18 di altezza per un'onda che sta tra y=3 e y=15) cosi' lo spessore del
+       tratto e i capi arrotondati NON vengono tagliati. Asset unico riusato
+       sotto ogni titolo di sezione e sotto la voce di menu attiva. -->
+  <path d="M4 9 C 16 3, 28 15, 41 9 S 66 3, 79 9 S 104 15, 116 8"
+        stroke="#EA0031" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

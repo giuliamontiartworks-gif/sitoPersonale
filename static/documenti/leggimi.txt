@@ -1,0 +1,4 @@
+Metti qui UN file PDF con il tuo curriculum + portfolio completo.
+Nome libero (es. "giulia-monti-portfolio.pdf"). Il sito lo trova da solo
+e la CTA nella pagina Portfolio diventa un download automatico.
+Se questa cartella resta vuota, il link non viene mostrato.

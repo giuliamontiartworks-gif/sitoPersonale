@@ -1,0 +1,227 @@
+/* ==========================================================================
+   base.css — reset leggero, tipografia globale, elementi e layout comuni
+   (contenitori centrati, sezioni, titoli con doodle, link di ritorno).
+   Gli stili dei singoli componenti stanno in componenti.css.
+   ========================================================================== */
+
+/* Il font del nome/logo ("neulis-cursive") arriva da Adobe Fonts:
+   vedi il <link> del kit Typekit in templates/base.html e la variabile
+   --font-logo in tokens.css. */
+
+/* --- Reset leggero ------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--colore-crema);
+  color: var(--colore-testo);
+  font-family: var(--font-principale);
+  font-weight: 400;
+  font-size: 1.0625rem;      /* ~17px */
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Rende invisibile un elemento ma lo lascia leggibile agli screen reader. */
+.solo-screen-reader {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Focus visibile da tastiera su TUTTI gli elementi interattivi ------- */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--colore-rosso);
+  outline-offset: 2px;
+  /* Niente border-radius qui: l'outline segue gia' gli angoli dell'elemento,
+     e forzarlo qui deformava i campi del form quando ricevevano il focus. */
+}
+
+/* --- Tipografia -------------------------------------------------------- */
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-principale);
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 var(--spazio-m);
+  color: var(--colore-testo);
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+h2 {
+  font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+}
+
+h3 {
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+}
+
+p {
+  margin: 0 0 var(--spazio-m);
+}
+
+/* Paragrafi lunghi: non superano una larghezza comoda da leggere. */
+.testo-lungo {
+  max-width: var(--larghezza-testo);
+}
+
+/* --- Layout comuni ------------------------------------------------------ */
+
+/* Contenitore centrato con margini laterali. */
+.contenitore {
+  width: 100%;
+  max-width: var(--larghezza-contenuto);
+  margin: 0 auto;
+  padding-left: var(--spazio-l);
+  padding-right: var(--spazio-l);
+}
+
+/* Stacco verticale standard tra le sezioni di una pagina. */
+.sezione {
+  padding-top: var(--spazio-sezione);
+  padding-bottom: var(--spazio-sezione);
+}
+
+.sezione--compatta {
+  padding-top: var(--spazio-xl);
+  padding-bottom: var(--spazio-xl);
+}
+
+/* Contenuto centrato orizzontalmente (hero, pagina grazie). */
+.centrato {
+  text-align: center;
+}
+
+.centrato .titolo-sezione__doodle,
+.centrato .doodle-titolo {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- Titolo di sezione con sottolineatura "doodle" -------------------- */
+/* Ogni H2 del sito usa questo blocco: il testo + l'immagine SVG sotto.  */
+
+.titolo-sezione {
+  margin-bottom: var(--spazio-xl);
+}
+
+.titolo-sezione h2,
+.titolo-sezione h1 {
+  margin-bottom: var(--spazio-s);
+}
+
+/* L'immagine della sottolineatura disegnata a mano (asset unico riusato). */
+.doodle-titolo {
+  display: block;
+  width: 90px;
+  height: auto;
+}
+
+/* --- Link "torna indietro" ------------------------------------------- */
+
+.link-ritorno {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spazio-xs);
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--colore-rosso);
+  margin-bottom: var(--spazio-l);
+}
+
+.link-ritorno:hover {
+  text-decoration: underline;
+}
+
+/* --- Link di testo con accento rosso -------------------------------- */
+
+.link-accento {
+  color: var(--colore-rosso);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --- <main>: spinge il footer in fondo anche con poco contenuto ------ */
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* --- Griglie riutilizzabili ---------------------------------------- */
+/* 1 colonna su mobile, 2 su desktop: usata da Servizi e "Fuori dal lavoro". */
+
+.griglia-due {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spazio-l);
+}
+
+/* 2 colonne su mobile, 3 su desktop: usata dalla griglia progetti categoria.
+   minmax(0,1fr) impedisce che una card col titolo lungo sfori lo schermo. */
+.griglia-progetti {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spazio-l);
+}
+
+@media (min-width: 960px) {
+  .contenitore {
+    padding-left: var(--spazio-xl);
+    padding-right: var(--spazio-xl);
+  }
+
+  .griglia-due {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spazio-xl);
+  }
+
+  .griglia-progetti {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% from "partials/titolo_sezione.html" import titolo_sezione %}
+{% from "partials/bottone.html" import bottone %}
+
+{% block titolo %}Grazie! — Giulia Monti{% endblock %}
+{% block descrizione %}Messaggio inviato a Giulia Monti. Riceverai una risposta di solito entro 48 ore.{% endblock %}
+
+{% block contenuto %}
+
+  <section class="sezione contenitore centrato">
+    <div class="cerchio-conferma" aria-hidden="true">&check;</div>
+
+    {{ titolo_sezione("Grazie!", livello=1) }}
+
+    <p class="testo-lungo" style="margin-left: auto; margin-right: auto;">
+      Ho ricevuto il tuo messaggio. Ti rispondo di solito entro 48 ore,
+      all'indirizzo email che hai indicato. Nel frattempo puoi dare
+      un'occhiata al portfolio.
+    </p>
+
+    <div class="gruppo-bottoni">
+      {{ bottone("Torna alla home", href=url_for('home'), variante="primario") }}
+      {{ bottone("Esplora il portfolio", href=url_for('portfolio'), variante="secondario") }}
+    </div>
+  </section>
+
+{% endblock %}

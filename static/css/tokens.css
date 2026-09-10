@@ -1,0 +1,58 @@
+/* ==========================================================================
+   tokens.css — le "variabili" del sito: colori, font, spaziature, raggi.
+   Nessuna regola di layout qui dentro: solo custom properties.
+   Ogni altro file CSS usa SOLO questi token, mai valori scritti a mano.
+   ========================================================================== */
+
+:root {
+  /* --- Colori ------------------------------------------------------------ */
+  --colore-rosso: #EA0031;         /* primario: CTA, accenti, bordi */
+  --colore-rosso-scuro: #BB0027;   /* stato "premuto" dei bottoni rossi */
+  --colore-lilla: #C8ABFF;         /* secondario, segnaposto immagini */
+  --colore-lilla-chiaro: #E9DEFF;  /* sfondi soft, card servizi, banner */
+  --colore-crema: #FBF7FF;         /* sfondo pagina (non bianco puro) */
+  --colore-testo: #2B1240;         /* testo principale (viola scurissimo) */
+  --colore-testo-tenue: #6B5A7E;   /* testo secondario, didascalie */
+  --colore-bianco: #FFFFFF;
+  --colore-bordo-campo: #E9DEFF;   /* bordo dei campi form a riposo */
+  --colore-placeholder: #9A8DA9;   /* testo placeholder nei campi */
+  --colore-verde-ok: #35C77A;      /* pallino del toast "Email copiata" */
+
+  /* --- Tipografia ------------------------------------------------------- */
+  --font-principale: 'Fredoka', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Font del nome/logo: "neulis-cursive", servito da Adobe Fonts (Typekit).
+     Il <link> del kit e' in base.html. "Caveat" e' il ripiego se non carica. */
+  --font-logo: 'neulis-cursive', 'Caveat', cursive;
+
+  /* --- Raggi angoli --------------------------------------------------- */
+  --raggio-pillola: 100px;         /* bottoni, chip, badge: sempre arrotondati */
+  --raggio-card: 20px;
+  --raggio-card-grande: 28px;
+  --raggio-campo: 16px;            /* campi del form */
+
+  /* --- Spaziature (scala usata per margini e padding) ----------------- */
+  --spazio-xs: 4px;
+  --spazio-s: 8px;
+  --spazio-m: 16px;
+  --spazio-l: 24px;
+  --spazio-xl: 40px;
+  --spazio-xxl: 64px;
+  --spazio-sezione: 88px;          /* stacco verticale tra sezioni di pagina */
+
+  /* --- Larghezze e breakpoint --------------------------------------- */
+  --larghezza-contenuto: 1120px;   /* larghezza massima del contenuto centrato */
+  --larghezza-testo: 680px;        /* larghezza massima dei paragrafi lunghi */
+  --breakpoint-desktop: 960px;     /* sotto = mobile, sopra = desktop */
+
+  /* --- Ombre --------------------------------------------------------- */
+  --ombra-morbida: 0 8px 30px rgba(43, 18, 64, 0.12);
+  --ombra-popup: 0 20px 60px rgba(43, 18, 64, 0.28);
+
+  /* --- Transizioni ------------------------------------------------- */
+  --transizione-veloce: 0.15s ease;
+  --transizione-media: 0.25s ease;
+  /* Curva morbida "tipo Smart Animate": parte decisa e decelera dolcemente.
+     Usata per il pannello Info della pagina progetto. */
+  --ease-morbido: cubic-bezier(0.22, 1, 0.36, 1);
+  --transizione-pannello: 0.42s var(--ease-morbido);
+}

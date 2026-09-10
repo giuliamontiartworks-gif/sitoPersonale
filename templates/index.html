@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% from "partials/bottone.html" import bottone %}
+{% from "partials/titolo_sezione.html" import titolo_sezione %}
+{% from "partials/card_progetto.html" import card_progetto %}
+{% from "partials/card_servizio.html" import card_servizio %}
+{% from "partials/badge_certificazione.html" import badge_certificazione %}
+
+{% block titolo %}Giulia Monti — Art director, strategist e illustratrice a Torino{% endblock %}
+{% block descrizione %}Giulia Monti: art direction, strategia e illustrazione a Torino. Progetti per brand profit e no profit, con un'estetica che serve il risultato.{% endblock %}
+{% block classe_body %}pagina-home{% endblock %}
+
+{% block contenuto %}
+
+  {# ------------------------------------------------------------ HERO #}
+  <section class="hero contenitore centrato">
+    <span class="hero__eyebrow">{{ testi.eyebrow }}</span>
+
+    {# Titolo su due righe: l'a-capo (<br>) è voluto, esattamente come nel Figma. #}
+    <h1 class="hero__titolo">{{ testi.titolo_riga1 }}<br>{{ testi.titolo_riga2 }}</h1>
+    <img class="doodle-titolo" src="{{ url_for('static', filename='img/doodle-sottolineatura.svg') }}" alt="" aria-hidden="true">
+
+    <p class="hero__presentazione">{{ testi.presentazione_riga1 }}<br>{{ testi.presentazione_riga2 }}</p>
+
+    <div class="gruppo-bottoni">
+      {{ bottone("Guarda i progetti", href=url_for('portfolio'), variante="primario") }}
+      {{ bottone("Chi sono", href=url_for('chi_sono'), variante="secondario") }}
+    </div>
+  </section>
+
+
+  {# --------------------------------------------- PROGETTI IN EVIDENZA #}
+  <section class="sezione contenitore">
+    {{ titolo_sezione("Progetti in evidenza") }}
+
+    {% if progetti_evidenza %}
+      {# Prima card: la "vetrina" (progetto più importante), a tutta larghezza. #}
+      {{ card_progetto(progetti_evidenza[0], vetrina=true) }}
+
+      {# Sotto: gli altri progetti in evidenza, in riga (max 3). #}
+      <div class="evidenza__riga-tre">
+        {% for progetto in progetti_evidenza[1:4] %}
+          {{ card_progetto(progetto) }}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="gruppo-bottoni gruppo-bottoni--centrato" style="margin-top: var(--spazio-xl);">
+      {{ bottone("Esplora il portfolio", href=url_for('portfolio'), variante="secondario") }}
+    </div>
+  </section>
+
+
+  {# -------------------------- ESPERIENZA IN AGENZIA + CERTIFICAZIONI #}
+  {# Due colonne dentro un riquadro lilla, separate da una linea verticale
+     (solo desktop). Ogni colonna ha il suo titoletto, senza doodle. #}
+  <section class="sezione contenitore">
+    <div class="banner-esperienza">
+      <div class="banner-esperienza__griglia">
+
+        <div class="banner-esperienza__col">
+          <h2 class="banner-esperienza__titolo">{{ testi.esperienza_titolo }}</h2>
+          <p>{{ testi.esperienza_testo }}</p>
+          <a class="link-accento" href="{{ url_for('categoria', slug_categoria='lavori-agenzia') }}">
+            Vedi i miei lavori d'agenzia →
+          </a>
+        </div>
+
+        <div class="banner-esperienza__col">
+          <h2 class="banner-esperienza__titolo">{{ testi.certificazioni_titolo }}</h2>
+          {% if certificazioni %}
+            <div class="riga-badge">
+              {# In Home ne mostriamo solo alcune; tutte in Chi sono. #}
+              {% for cert in certificazioni[:3] %}
+                {{ badge_certificazione(cert) }}
+              {% endfor %}
+            </div>
+            <a class="link-accento" href="{{ url_for('chi_sono') }}#certificazioni">
+              Vedi tutte in Chi sono →
+            </a>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  {# ------------------------------------------ COSA POSSO FARE PER TE #}
+  <section class="sezione contenitore">
+    {{ titolo_sezione("Cosa posso fare per te") }}
+
+    <div class="griglia-due">
+      {% for servizio in servizi %}
+        {{ card_servizio(servizio.nome, servizio.descrizione) }}
+      {% endfor %}
+    </div>
+
+    <div class="gruppo-bottoni gruppo-bottoni--centrato" style="margin-top: var(--spazio-xl);">
+      {{ bottone("Scrivimi", href=url_for('contatti'), variante="primario") }}
+    </div>
+  </section>
+
+{% endblock %}

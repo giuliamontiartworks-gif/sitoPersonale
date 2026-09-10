@@ -1,0 +1,61 @@
+{# =========================================================================
+   base.html — scheletro condiviso da tutte le pagine.
+   Ogni pagina estende questo file e riempie i blocchi:
+     - {% block titolo %}      testo del <title>
+     - {% block descrizione %} contenuto di <meta name="description">
+     - {% block classe_body %} classe extra sul <body> (opzionale)
+     - {% block contenuto %}   corpo della pagina
+     - {% block script %}      <script> specifici della pagina (opzionale)
+   ========================================================================= #}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% block titolo %}Giulia Monti{% endblock %}</title>
+  <meta name="description" content="{% block descrizione %}Portfolio di Giulia Monti, art director junior, illustratrice e strategist a Torino.{% endblock %}">
+
+  {# --- Font ---
+     - Fredoka (testo del sito): Google Fonts
+     - Neulis Cursive (nome/logo): Adobe Fonts / Typekit — kit "uco7qbj"
+     - Caveat resta come ripiego se Adobe Fonts non carica #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/uco7qbj.css">
+
+  {# --- Fogli di stile del sito, in ordine: token -> base -> componenti -> pagine --- #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/componenti.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pagine.css') }}">
+
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}">
+</head>
+<body class="{% block classe_body %}{% endblock %}">
+
+  {% include "partials/header.html" %}
+
+  <main>
+    {% block contenuto %}{% endblock %}
+  </main>
+
+  {% include "partials/footer.html" %}
+
+  {# Popup certificazione e toast: presenti in ogni pagina, nascosti finché non servono. #}
+  {% include "partials/popup_certificazione.html" %}
+  {% include "partials/toast.html" %}
+
+  {# --- JavaScript del sito (vanilla, nessuna libreria) --- #}
+  <script src="{{ url_for('static', filename='js/menu-mobile.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/tendina-servizio.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modulo-contatti.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popup-certificazioni.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/mostra-altro.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/toast-copia.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/slideshow-progetto.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/carosello-portfolio.js') }}"></script>
+  {% block script %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% from "partials/titolo_sezione.html" import titolo_sezione %}
+{% from "partials/card_progetto.html" import card_progetto %}
+
+{% block titolo %}Portfolio — Giulia Monti, art direction e illustrazione a Torino{% endblock %}
+{% block descrizione %}Il portfolio di Giulia Monti a Torino: illustrazione, lavori d'agenzia, strategia, brand identity e fotografia per aziende e organizzazioni no profit.{% endblock %}
+
+{% block contenuto %}
+
+  <section class="sezione--compatta contenitore">
+    {{ titolo_sezione("Portfolio", livello=1) }}
+
+    <p class="testo-lungo">
+      Progetti di art direction, illustrazione e strategia realizzati a Torino, per
+      brand, editoria e agenzie, sia nel profit sia nel no profit. Ogni categoria
+      raccoglie una selezione: il quadro completo è nel PDF.
+      {% if url_portfolio_pdf and url_portfolio_pdf != "#" %}
+        {# "download" fa partire il salvataggio del file invece di aprirlo nel browser. #}
+        <a class="link-accento" href="{{ url_portfolio_pdf }}" download>
+          Scarica qui il mio curriculum e il portfolio completo in PDF
+        </a>.
+      {% endif %}
+    </p>
+  </section>
+
+  {# Una sezione per categoria: titolo + carosello orizzontale di 3 progetti.
+     Sia il titolo H2 sia la freccia in fondo portano alla pagina della categoria. #}
+  {% for gruppo in categorie_con_progetti %}
+    {% set url_categoria = url_for('categoria', slug_categoria=gruppo.categoria.slug) %}
+    <section class="sezione--compatta contenitore">
+      <h2 class="titolo-categoria">
+        <a href="{{ url_categoria }}">{{ gruppo.categoria.nome }}</a>
+      </h2>
+
+      {% if gruppo.anteprima %}
+        {# data-carosello + data-vai-categoria: su mobile, se l'utente continua
+           a trascinare verso destra oltre l'ultima card, viene portato alla
+           pagina della categoria (vedi static/js/carosello-portfolio.js). #}
+        <div class="carosello" data-carosello>
+          {# con_tag=false: la categoria e' gia' nel titolo H2 qui sopra. #}
+          {% for progetto in gruppo.anteprima %}
+            {{ card_progetto(progetto, con_tag=false) }}
+          {% endfor %}
+
+          <a class="freccia-vedi-tutti"
+             data-vai-categoria
+             href="{{ url_categoria }}"
+             aria-label="Vedi tutti i progetti di {{ gruppo.categoria.nome }}">→</a>
+        </div>
+      {% else %}
+        <p class="testo-lungo">Progetti in arrivo per questa categoria.</p>
+      {% endif %}
+    </section>
+  {% endfor %}
+
+{% endblock %}

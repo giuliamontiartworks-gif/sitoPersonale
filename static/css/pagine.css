@@ -1,0 +1,317 @@
+/* ==========================================================================
+   pagine.css — stili specifici di singole pagine, quando non hanno senso
+   come componente riutilizzabile.
+   ========================================================================== */
+
+
+/* --- HOME: sezioni piu' ravvicinate ----------------------------------- */
+/* Sulla Home lo stacco verticale tra le sezioni e' dimezzato. */
+
+.pagina-home .sezione {
+  padding-top: calc(var(--spazio-sezione) / 2);
+  padding-bottom: calc(var(--spazio-sezione) / 2);
+}
+
+.pagina-home .hero {
+  padding-bottom: calc(var(--spazio-sezione) / 2);
+}
+
+
+/* --- HOME: hero -------------------------------------------------------- */
+
+.hero {
+  text-align: center;
+  padding-top: var(--spazio-xxl);
+  padding-bottom: var(--spazio-sezione);
+}
+
+.hero__eyebrow {
+  display: inline-block;
+  margin-bottom: var(--spazio-l);
+  padding: 6px 16px;
+  border-radius: var(--raggio-pillola);
+  background-color: var(--colore-lilla-chiaro);
+  color: var(--colore-testo);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Titolo della hero: due righe (l'a-capo e' un <br> nel template, dopo
+   "illustrazione"). Nessun limite di larghezza: ci pensa il <br>. */
+.hero__titolo {
+  font-size: clamp(1.9rem, 4.2vw, 2.4rem);
+  margin: 0 auto var(--spazio-s);
+}
+
+.hero__presentazione {
+  /* Piu' largo: cosi' su desktop sta su due righe (l'a-capo dopo
+     "illustratrice." e' un <br> nel template). Su mobile va a capo da solo. */
+  max-width: 56rem;
+  margin: var(--spazio-l) auto var(--spazio-xl);
+  color: var(--colore-testo-tenue);
+}
+
+
+/* --- HOME: progetti in evidenza ------------------------------------- */
+/* La card grande (vetrina) e la riga sotto occupano entrambe tutta la
+   larghezza del contenitore. minmax(0,1fr) evita che il testo lungo di una
+   card allarghi la colonna facendo uscire la griglia dallo schermo. */
+
+.evidenza__riga-tre {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spazio-l);
+  margin-top: var(--spazio-l);
+}
+
+@media (min-width: 960px) {
+  .evidenza__riga-tre {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* --- HOME: banner "Esperienza in agenzia" + "Certificazioni" -------------
+   Due colonne dentro un riquadro lilla, con una linea verticale di
+   separazione (solo desktop). Su mobile le colonne si impilano. */
+
+.banner-esperienza {
+  border-radius: var(--raggio-card-grande);
+  background-color: var(--colore-lilla-chiaro);
+  padding: var(--spazio-xxl) var(--spazio-xl);
+}
+
+.banner-esperienza__griglia {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spazio-xl);
+}
+
+/* Titoletto di ciascuna colonna: in grassetto, colore testo, SENZA doodle
+   (in questa sezione la gerarchia e' diversa dal resto del sito). */
+.banner-esperienza__titolo {
+  margin: 0 0 var(--spazio-m);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--colore-testo);
+}
+
+.banner-esperienza__col p {
+  color: var(--colore-testo);
+  max-width: 42ch;
+}
+
+.banner-esperienza__col .link-accento {
+  display: inline-block;
+  margin-top: var(--spazio-s);
+}
+
+@media (min-width: 960px) {
+  .banner-esperienza__griglia {
+    grid-template-columns: 1.1fr 1fr;
+    gap: var(--spazio-xl);
+  }
+  /* La seconda colonna prende la linea di separazione a sinistra. */
+  .banner-esperienza__col + .banner-esperienza__col {
+    border-left: 1px solid rgba(43, 18, 64, 0.25);
+    padding-left: var(--spazio-xl);
+  }
+}
+
+
+/* --- CHI SONO: intestazione con foto ------------------------------ */
+
+/* MOBILE: una colonna, ordine sorgente -> titolo, foto, testo. */
+.intro-chi-sono {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spazio-l);
+  align-items: start;
+}
+
+/* Sul mobile il doodle del titolo non deve avere il margine grande:
+   ci pensa il "gap" della griglia a distanziare foto e testo. */
+.intro-chi-sono__titolo .titolo-sezione {
+  margin-bottom: 0;
+}
+
+.intro-chi-sono__foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--raggio-card-grande);
+  object-fit: cover;
+  background-color: var(--colore-lilla);
+  color: var(--colore-testo);
+  font-size: 0.85rem;
+}
+
+.intro-chi-sono__ruolo {
+  color: var(--colore-rosso);
+  font-weight: 500;
+  margin-bottom: var(--spazio-m);
+}
+
+.intro-chi-sono__social-label {
+  margin: var(--spazio-l) 0 var(--spazio-s);
+  font-weight: 600;
+}
+
+/* DESKTOP: foto a sinistra su due righe, titolo in alto a destra, testo sotto. */
+@media (min-width: 960px) {
+  .intro-chi-sono {
+    grid-template-columns: 320px 1fr;
+    grid-template-areas:
+      "foto titolo"
+      "foto testo";
+    grid-template-rows: auto 1fr;
+    column-gap: var(--spazio-xxl);
+    row-gap: var(--spazio-m);
+  }
+  .intro-chi-sono__titolo { grid-area: titolo; }
+  .intro-chi-sono__foto   { grid-area: foto; }
+  .intro-chi-sono__testo  { grid-area: testo; }
+
+  /* Su desktop il titolo riprende il suo margine sotto normale. */
+  .intro-chi-sono__titolo .titolo-sezione {
+    margin-bottom: var(--spazio-m);
+  }
+}
+
+
+/* --- CHI SONO: due sezioni affiancate (Esperienza|Formazione, Cert.|Lingue) --- */
+
+.doppia-sezione {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spazio-xl);
+}
+
+@media (min-width: 960px) {
+  .doppia-sezione {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spazio-xxl);
+  }
+}
+
+
+/* --- CHI SONO: blocchi esperienza e formazione ------------------- */
+
+.blocco-cv + .blocco-cv {
+  margin-top: var(--spazio-l);
+}
+
+.blocco-cv__ruolo {
+  margin: 0 0 var(--spazio-xs);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.blocco-cv__contesto {
+  margin: 0 0 var(--spazio-s);
+  color: var(--colore-rosso);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.blocco-cv__descrizione {
+  margin: 0;
+  color: var(--colore-testo-tenue);
+}
+
+.blocco-cv__link {
+  margin: var(--spazio-s) 0 0;
+}
+
+
+/* --- CHI SONO: social circolari --------------------------------- */
+
+.social-cerchi {
+  display: flex;
+  gap: var(--spazio-m);
+  align-items: center;
+}
+
+.social-cerchi__icona {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--colore-rosso);
+  color: var(--colore-bianco);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .social-cerchi__icona:hover {
+    background-color: var(--colore-rosso-scuro);
+  }
+}
+
+
+/* --- CHI SONO: lingue ------------------------------------------ */
+
+.elenco-lingue {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spazio-s) var(--spazio-xl);
+}
+
+.elenco-lingue li span {
+  color: var(--colore-testo-tenue);
+}
+
+
+/* --- GRAZIE / 404: cerchio con spunta -------------------------- */
+
+.cerchio-conferma {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  margin: 0 auto var(--spazio-l);
+  border-radius: 50%;
+  background-color: var(--colore-rosso);
+  color: var(--colore-bianco);
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+
+/* --- PROGETTO: sezione "Altri progetti" ------------------------ */
+
+.altri-progetti__griglia {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spazio-l);
+  margin-top: var(--spazio-xl);
+}
+
+@media (min-width: 960px) {
+  .altri-progetti__griglia {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* --- PORTFOLIO: titolo di categoria cliccabile ------------------------- */
+
+.titolo-categoria a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.titolo-categoria a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--colore-rosso);
+}

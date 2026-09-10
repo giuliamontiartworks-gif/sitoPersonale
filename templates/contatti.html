@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% from "partials/titolo_sezione.html" import titolo_sezione %}
+{% from "partials/bottone.html" import bottone %}
+{% from "partials/campo_modulo.html" import campo_testo, campo_textarea %}
+
+{% block titolo %}Contatti — Scrivi a Giulia Monti{% endblock %}
+{% block descrizione %}Contatta Giulia Monti a Torino per progetti di art direction, illustrazione e strategia: aziende profit e no profit, brand ed editoria.{% endblock %}
+
+{% block contenuto %}
+
+  <section class="sezione--compatta contenitore">
+    {{ titolo_sezione("Contatti", livello=1) }}
+    <p class="intro-chi-sono__ruolo">Raccontami il tuo progetto: ti rispondo io.</p>
+    <p class="testo-lungo">
+      Lavoro con agenzie, aziende profit e no profit, brand ed editoria, a Torino e
+      da remoto. Scrivimi qui sotto oppure via email: se hai già un brief, una
+      deadline o dei riferimenti, allegali pure nel messaggio.
+    </p>
+  </section>
+
+
+  {# ---------------------------------------------------------- FORM #}
+  <section class="sezione--compatta contenitore">
+    {{ titolo_sezione("Scrivimi") }}
+
+    {# data-modulo-contatti: static/js/modulo-contatti.js tiene il bottone
+       "Invia" disabilitato finché tutti i campi obbligatori non sono compilati. #}
+    <form class="modulo" method="post" action="{{ url_for('contatti') }}" data-modulo-contatti>
+
+      <div class="campo-riga">
+        {{ campo_testo("nome", "Nome e cognome", obbligatorio=true, placeholder="Il tuo nome e cognome") }}
+        {{ campo_testo("email", "Email", tipo="email", obbligatorio=true, placeholder="latua@email.com") }}
+      </div>
+
+      <div class="campo-riga">
+        {{ campo_testo("telefono", "Numero di telefono", tipo="tel", obbligatorio=true, placeholder="Il tuo numero") }}
+        {% include "partials/dropdown_servizio.html" %}
+      </div>
+
+      {{ campo_textarea("messaggio", "Messaggio", obbligatorio=true, placeholder="Raccontami la tua idea...") }}
+
+      {{ bottone("Invia messaggio", tipo="submit", variante="primario", classe="js-invia") }}
+
+      <p class="nota-modulo">Rispondo di solito entro 48 ore.</p>
+    </form>
+  </section>
+
+
+  {# ----------------------------------------- ALTRI MODI PER CONTATTARMI #}
+  <section class="sezione contenitore">
+    {{ titolo_sezione("Altri modi per contattarmi") }}
+
+    <div class="modi-contatto">
+
+      {# Pillola email: l'indirizzo + il bottone "Copia" dentro la stessa pillola. #}
+      <div class="pillola-email">
+        <span class="pillola-email__indirizzo" data-email>{{ persona.email }}</span>
+        <button type="button" class="pillola-email__copia js-copia-email">Copia</button>
+      </div>
+
+      {% for rete in social %}
+        <a class="bottone bottone--secondario" href="{{ rete.url }}" target="_blank" rel="noopener">
+          {{ rete.nome }}
+        </a>
+      {% endfor %}
+
+    </div>
+  </section>
+
+{% endblock %}
