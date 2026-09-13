@@ -51,8 +51,8 @@ home = {
     # Il titolo della hero è su DUE righe (come nel Figma): l'a-capo è
     # esattamente dopo "illustrazione". Per questo lo teniamo diviso in due
     # stringhe: il template le separa con un <br>.
-    "titolo_riga1": "Art direction, strategia e illustrazione",
-    "titolo_riga2": "per progetti in cui l'estetica serve il risultato.",
+    "titolo_riga1": "Art direction, strategia e illustrazione,",
+    "titolo_riga2": "dove il bello e il funzionale coincidono.",
 
     # Paragrafo della hero, su due righe (a capo dopo "illustratrice.").
     "presentazione_riga1": "Sono Giulia, art director junior e illustratrice.",
