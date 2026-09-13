@@ -1,0 +1,19 @@
+# Ambiente virtuale Python
+.venv/
+venv/
+
+# File compilati Python
+__pycache__/
+*.pyc
+
+# Credenziali (email, ecc.) — NON committare mai
+.env
+
+# Sistema
+.DS_Store
+
+# File sorgente pesanti (Photoshop, ecc.): il sito non li legge mai,
+# servono solo a chi lavora ai progetti — non vanno su GitHub.
+*.psd
+*.ai
+*.tiff
