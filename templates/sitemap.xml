@@ -1,0 +1,14 @@
+{# =========================================================================
+   sitemap.xml — mappa del sito per i motori di ricerca.
+   Non e' una pagina che un visitatore vede: la legge Google (via la rotta
+   /sitemap.xml in app.py) per scoprire ed esplorare tutte le pagine.
+   ========================================================================= #}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{% for pagina in pagine %}
+  <url>
+    <loc>{{ pagina.loc }}</loc>
+    <priority>{{ pagina.priorita }}</priority>
+  </url>
+{% endfor %}
+</urlset>

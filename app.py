@@ -350,6 +350,50 @@ def grazie():
     return render_template("grazie.html")
 
 
+@app.route("/robots.txt")
+def robots():
+    """
+    Dice ai motori di ricerca che possono leggere tutto il sito e dove
+    trovare la mappa completa delle pagine (sitemap.xml). E' il primo file
+    che Google va a cercare quando scopre il dominio.
+    """
+    righe = [
+        "User-agent: *",
+        "Allow: /",
+        "Sitemap: " + url_for("sitemap", _external=True),
+    ]
+    return "\n".join(righe), 200, {"Content-Type": "text/plain; charset=utf-8"}
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    """
+    Elenco di TUTTE le pagine del sito, in XML, cosi' Google le trova e le
+    indicizza tutte (anche quelle non linkate direttamente dalla home).
+    Costruita automaticamente dai dati: aggiungere un progetto o una
+    categoria basta, non serve toccare questa funzione.
+    """
+    pagine = [
+        {"loc": url_for("home", _external=True), "priorita": "1.0"},
+        {"loc": url_for("portfolio", _external=True), "priorita": "0.9"},
+        {"loc": url_for("chi_sono", _external=True), "priorita": "0.7"},
+        {"loc": url_for("contatti", _external=True), "priorita": "0.7"},
+    ]
+    for categoria in elenco_categorie():
+        pagine.append({
+            "loc": url_for("categoria", slug_categoria=categoria["slug"], _external=True),
+            "priorita": "0.8",
+        })
+    for progetto in elenco_progetti():
+        pagine.append({
+            "loc": url_for("progetto", slug_progetto=progetto["slug"], _external=True),
+            "priorita": "0.6",
+        })
+
+    corpo = render_template("sitemap.xml", pagine=pagine)
+    return corpo, 200, {"Content-Type": "application/xml; charset=utf-8"}
+
+
 @app.errorhandler(404)
 def pagina_non_trovata(errore):
     """Pagina 404 semplice, con lo stesso layout del sito."""
