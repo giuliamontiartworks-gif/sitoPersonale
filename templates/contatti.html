@@ -28,6 +28,17 @@
        "Invia" disabilitato finché tutti i campi obbligatori non sono compilati. #}
     <form class="modulo" method="post" action="{{ url_for('contatti') }}" data-modulo-contatti>
 
+      {# ---- ANTI-SPAM (invisibile per le persone, vedi contatti() in app.py) ----
+         1) "sito_web": campo esca. Una persona non lo vede e lo lascia vuoto;
+            i bot che compilano i form in automatico di solito lo riempiono.
+         2) "aperto_alle": timestamp di quando la pagina e' stata caricata, per
+            scartare invii troppo veloci per essere una persona che scrive. #}
+      <div class="campo-esca" aria-hidden="true">
+        <label for="sito_web">Non compilare questo campo</label>
+        <input type="text" id="sito_web" name="sito_web" tabindex="-1" autocomplete="off">
+      </div>
+      <input type="hidden" name="aperto_alle" value="{{ ora_corrente_timestamp }}">
+
       <div class="campo-riga">
         {{ campo_testo("nome", "Nome e cognome", obbligatorio=true, placeholder="Il tuo nome e cognome") }}
         {{ campo_testo("email", "Email", tipo="email", obbligatorio=true, placeholder="latua@email.com") }}

@@ -16,6 +16,7 @@ Invio email del form Contatti: le credenziali stanno nel file ".env"
 """
 
 import os
+import time
 
 from flask import Flask, render_template, abort, redirect, url_for, request
 from flask_mail import Mail, Message
@@ -325,23 +326,52 @@ def contatti():
             comunque la pagina "grazie": vedi invia_email_contatto.)
     """
     if request.method == "POST":
-        # "servizio" e' multi-selezione: getlist() restituisce tutti i valori.
-        servizi_scelti = [s.strip() for s in request.form.getlist("servizio") if s.strip()]
-        dati_modulo = {
-            "nome": request.form.get("nome", "").strip(),
-            "email": request.form.get("email", "").strip(),
-            "telefono": request.form.get("telefono", "").strip(),
-            "servizio": ", ".join(servizi_scelti),
-            "messaggio": request.form.get("messaggio", "").strip(),
-        }
-        invia_email_contatto(dati_modulo)
+        # Se il messaggio sembra spam (vedi _sembra_spam), mostriamo comunque
+        # "grazie" come se fosse andato tutto bene: cosi' chi/cosa lo manda
+        # non capisce che e' stato scartato e non insiste per aggirarci.
+        if not _sembra_spam(request.form):
+            # "servizio" e' multi-selezione: getlist() restituisce tutti i valori.
+            servizi_scelti = [s.strip() for s in request.form.getlist("servizio") if s.strip()]
+            dati_modulo = {
+                "nome": request.form.get("nome", "").strip(),
+                "email": request.form.get("email", "").strip(),
+                "telefono": request.form.get("telefono", "").strip(),
+                "servizio": ", ".join(servizi_scelti),
+                "messaggio": request.form.get("messaggio", "").strip(),
+            }
+            invia_email_contatto(dati_modulo)
         return redirect(url_for("grazie"))
 
     return render_template(
         "contatti.html",
         opzioni_servizio=contenuti.opzioni_servizio,
         testi=contenuti.chi_sono,
+        ora_corrente_timestamp=time.time(),
     )
+
+
+# Tempo minimo (in secondi) tra l'apertura della pagina e l'invio del form.
+# Una persona vera impiega sempre piu' di qualche secondo a scrivere un
+# messaggio; un bot lo compila e invia quasi istantaneamente.
+_SECONDI_MINIMI_COMPILAZIONE = 3
+
+
+def _sembra_spam(dati_form):
+    """
+    Controlli anti-spam invisibili sul form Contatti (vedi contatti.html):
+      1) il campo esca "sito_web" e' compilato -> quasi certamente un bot
+      2) il form e' stato inviato troppo poco tempo dopo l'apertura pagina
+    Nessuno dei due si vede o disturba una persona che compila il form.
+    """
+    if request.form.get("sito_web", "").strip():
+        return True
+
+    try:
+        aperto_alle = float(dati_form.get("aperto_alle", 0))
+    except (TypeError, ValueError):
+        return False  # campo mancante o manomesso: non blocchiamo per questo
+
+    return (time.time() - aperto_alle) < _SECONDI_MINIMI_COMPILAZIONE
 
 
 @app.route("/grazie")

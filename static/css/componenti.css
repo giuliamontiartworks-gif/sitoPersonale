@@ -699,6 +699,17 @@
   resize: vertical;
 }
 
+/* Campo "esca" anti-spam del modulo Contatti (vedi contatti.html): spostato
+   fuori dallo schermo invece di "display: none", cosi' un bot che ignora il
+   CSS o gli attributi hidden lo trova comunque compilabile e ci casca. */
+.campo-esca {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 /* Due campi affiancati su desktop (Nome+Email, Telefono+Servizio). */
 .campo-riga {
   display: grid;
