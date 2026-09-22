@@ -670,6 +670,15 @@
    BANNER COOKIE — fissato in fondo allo schermo, sopra tutto il resto.
    ========================================================================== */
 
+/* "display: flex" qui sotto vince sempre sulla regola di default del
+   browser per [hidden] (stessa specificità, ma la nostra viene dopo nel
+   foglio di stile) - quindi va ridetto esplicitamente che con l'attributo
+   "hidden" il banner deve sparire per davvero. Senza questa riga, il click
+   su "Accetta"/"Rifiuta" salva la scelta ma il banner resta a schermo. */
+.banner-cookie[hidden] {
+  display: none;
+}
+
 .banner-cookie {
   position: fixed;
   left: var(--spazio-l);
