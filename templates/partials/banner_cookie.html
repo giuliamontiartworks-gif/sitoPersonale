@@ -1,0 +1,22 @@
+{# =========================================================================
+   banner_cookie.html — banner di consenso cookie (obbligatorio: Google
+   Analytics non deve partire finché il visitatore non clicca "Accetta").
+   Nascosto di default (attributo "hidden"): static/js/cookie-consent.js lo
+   mostra solo se non è ancora stata fatta nessuna scelta.
+   ========================================================================= #}
+{% from "partials/bottone.html" import bottone %}
+
+<div class="banner-cookie" data-banner-cookie hidden role="dialog" aria-live="polite" aria-label="Consenso cookie">
+  <div class="banner-cookie__testo">
+    <p>
+      Questo sito usa Google Analytics per capire come viene usato (dati anonimi
+      di navigazione). Si attiva solo se lo accetti — puoi cambiare idea quando
+      vuoi dal link "Cookie" in fondo alla pagina.
+      <a href="{{ url_for('privacy') }}">Leggi la Privacy &amp; Cookie Policy</a>.
+    </p>
+  </div>
+  <div class="banner-cookie__azioni">
+    {{ bottone("Rifiuta", variante="secondario", classe="js-cookie-rifiuta") }}
+    {{ bottone("Accetta", variante="primario", classe="js-cookie-accetta") }}
+  </div>
+</div>

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% from "partials/titolo_sezione.html" import titolo_sezione %}
+
+{% block titolo %}Privacy & Cookie Policy — Giulia Monti{% endblock %}
+{% block descrizione %}Informativa sulla privacy e sui cookie del sito di Giulia Monti: quali dati vengono raccolti, perché, e come esercitare i tuoi diritti.{% endblock %}
+
+{% block contenuto %}
+
+  <section class="sezione--compatta contenitore">
+    {{ titolo_sezione("Privacy & Cookie Policy", livello=1) }}
+
+    <p class="testo-lungo">
+      Ultimo aggiornamento: {{ anno_corrente }}. Questa pagina spiega quali dati
+      raccoglie questo sito, perché, e quali diritti hai. È scritta in modo
+      semplice: se qualcosa non è chiaro, scrivimi pure.
+    </p>
+  </section>
+
+  <section class="sezione--compatta contenitore testo-lungo">
+
+    <h2>Chi tratta i tuoi dati</h2>
+    <p>
+      {{ persona.nome }}, {{ persona.citta }}. Per qualsiasi domanda su questa
+      informativa o sui tuoi dati puoi scrivere a
+      <a href="mailto:{{ persona.email }}">{{ persona.email }}</a>.
+    </p>
+
+    <h2>Dati raccolti tramite il modulo Contatti</h2>
+    <p>
+      Quando compili il form nella pagina <a href="{{ url_for('contatti') }}">Contatti</a>
+      raccolgo i dati che inserisci tu stesso: nome e cognome, email, numero di
+      telefono, il servizio di interesse e il messaggio. Li uso
+      <strong>esclusivamente per risponderti</strong> riguardo alla tua richiesta,
+      via email o telefono. Non li uso per altri scopi, non li vendo e non li
+      passo a terzi (a parte il fornitore che invia tecnicamente l'email, vedi
+      sotto). Li conservo il tempo necessario a gestire la tua richiesta ed
+      eventuali scambi successivi, poi li cancello.
+    </p>
+    <p>
+      Base giuridica: il tuo consenso implicito nell'inviare il modulo, dato
+      che lo scopo (risponderti) corrisponde a quanto chiaramente indicato
+      accanto al form.
+    </p>
+
+    <h2>Google Analytics (statistiche di navigazione)</h2>
+    <p>
+      Questo sito usa <strong>Google Analytics</strong>, un servizio di analisi
+      statistica di Google LLC, per capire quante persone visitano il sito e
+      quali pagine guardano di più. Si attiva <strong>solo se lo accetti</strong>
+      dal banner che vedi alla tua prima visita — se rifiuti, o se non fai
+      nessuna scelta, Google Analytics resta spento e non riceve nessun dato
+      su di te.
+    </p>
+    <p>
+      Se accetti, il tuo indirizzo IP viene troncato/anonimizzato prima di
+      essere inviato a Google (impostazione "anonymize_ip"), e i dati raccolti
+      sono aggregati e statistici: non servono a identificarti personalmente.
+      Google può trattare questi dati anche su server fuori dall'Unione
+      Europea (Stati Uniti), in base alle clausole contrattuali standard
+      previste dalla normativa europea.
+    </p>
+    <p>
+      Puoi cambiare idea in qualsiasi momento: in fondo a ogni pagina trovi il
+      link <a href="#" data-riapri-banner-cookie>"Gestisci i cookie"</a> per
+      riaprire il banner e modificare la tua scelta.
+    </p>
+
+    <h2>Cosa NON fa questo sito</h2>
+    <p>
+      Nessuna pubblicità di terze parti, nessun cookie di profilazione a fini
+      commerciali, nessuna vendita o cessione di dati a terzi. Il sito non usa
+      cookie "tecnici" che richiedano un consenso (quelli indispensabili al
+      suo funzionamento, come ricordare la tua scelta sui cookie, non
+      contengono dati personali).
+    </p>
+
+    <h2>I tuoi diritti</h2>
+    <p>
+      In base al Regolamento (UE) 2016/679 (GDPR), hai il diritto di chiedermi
+      in qualsiasi momento: quali dati ho su di te (accesso), di correggerli
+      se sbagliati (rettifica), di farteli cancellare (cancellazione), di
+      limitarne l'uso, o di riceverli in un formato trasferibile (portabilità).
+      Basta scrivere a <a href="mailto:{{ persona.email }}">{{ persona.email }}</a>.
+      Hai anche diritto di fare reclamo al
+      <a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">Garante per la protezione dei dati personali</a>.
+    </p>
+
+  </section>
+
+{% endblock %}

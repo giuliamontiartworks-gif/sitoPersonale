@@ -20,4 +20,10 @@
       <a href="{{ rete.url }}" target="_blank" rel="noopener">{{ rete.nome }}</a>
     {% endfor %}
   </nav>
+
+  {# Link legali: Privacy Policy + riapertura del banner cookie (vedi cookie-consent.js). #}
+  <nav class="pie-pagina__legale" aria-label="Informazioni legali">
+    <a href="{{ url_for('privacy') }}">Privacy &amp; Cookie Policy</a>
+    <a href="#" data-riapri-banner-cookie>Gestisci i cookie</a>
+  </nav>
 </footer>

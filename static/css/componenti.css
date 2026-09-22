@@ -643,6 +643,93 @@
   font-weight: 500;
 }
 
+/* Riga di link legali (Privacy, gestione cookie): più piccola e discreta
+   rispetto ai social, sotto di loro. */
+.pie-pagina__legale {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spazio-m);
+  margin-top: var(--spazio-m);
+  font-size: 0.85rem;
+}
+
+.pie-pagina__legale a {
+  color: var(--colore-testo);
+  opacity: 0.75;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pie-pagina__legale a:hover {
+  opacity: 1;
+}
+
+
+/* ==========================================================================
+   BANNER COOKIE — fissato in fondo allo schermo, sopra tutto il resto.
+   ========================================================================== */
+
+.banner-cookie {
+  position: fixed;
+  left: var(--spazio-l);
+  right: var(--spazio-l);
+  bottom: var(--spazio-l);
+  z-index: 80;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spazio-l);
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spazio-l);
+  background-color: var(--colore-crema);
+  border: 1px solid var(--colore-lilla-chiaro);
+  border-radius: var(--raggio-card);
+  box-shadow: var(--ombra-morbida);
+}
+
+.banner-cookie__testo {
+  flex: 1 1 320px;
+}
+
+.banner-cookie__testo p {
+  margin: 0;
+  color: var(--colore-testo);
+  font-size: 0.95rem;
+}
+
+.banner-cookie__testo a {
+  color: var(--colore-rosso);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.banner-cookie__azioni {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--spazio-s);
+}
+
+/* Su schermi piccoli il banner occupa tutta la larghezza, meno margine ai lati. */
+@media (max-width: 600px) {
+  .banner-cookie {
+    left: var(--spazio-s);
+    right: var(--spazio-s);
+    bottom: var(--spazio-s);
+    padding: var(--spazio-m);
+  }
+
+  .banner-cookie__azioni {
+    width: 100%;
+  }
+
+  .banner-cookie__azioni .bottone {
+    flex: 1 1 0;
+  }
+}
+
 
 /* ==========================================================================
    FORM — campi testo, textarea, e dropdown custom "Servizio".

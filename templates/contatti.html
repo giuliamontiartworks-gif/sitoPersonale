@@ -53,7 +53,11 @@
 
       {{ bottone("Invia messaggio", tipo="submit", variante="primario", classe="js-invia") }}
 
-      <p class="nota-modulo">Rispondo di solito entro 48 ore.</p>
+      <p class="nota-modulo">
+        Rispondo di solito entro 48 ore. Inviando il modulo, i tuoi dati vengono
+        usati solo per risponderti — leggi la
+        <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
+      </p>
     </form>
   </section>
 

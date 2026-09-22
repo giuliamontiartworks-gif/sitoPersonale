@@ -10,15 +10,10 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z60DQ3VLJF"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-Z60DQ3VLJF');
-  </script>
+  {# Google Analytics NON si carica più qui in automatico: parte solo dopo
+     che il visitatore ha accettato dal banner cookie (vedi
+     static/js/cookie-consent.js e partials/banner_cookie.html). E' quello
+     che la normativa privacy italiana richiede per i cookie di statistica. #}
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,6 +52,9 @@
   {% include "partials/popup_certificazione.html" %}
   {% include "partials/toast.html" %}
 
+  {# Banner cookie: presente in ogni pagina, nascosto finché serve (vedi cookie-consent.js). #}
+  {% include "partials/banner_cookie.html" %}
+
   {# --- JavaScript del sito (vanilla, nessuna libreria) --- #}
   <script src="{{ url_for('static', filename='js/menu-mobile.js') }}"></script>
   <script src="{{ url_for('static', filename='js/tendina-servizio.js') }}"></script>
@@ -66,6 +64,7 @@
   <script src="{{ url_for('static', filename='js/toast-copia.js') }}"></script>
   <script src="{{ url_for('static', filename='js/slideshow-progetto.js') }}"></script>
   <script src="{{ url_for('static', filename='js/carosello-portfolio.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/cookie-consent.js') }}"></script>
   {% block script %}{% endblock %}
 </body>
 </html>

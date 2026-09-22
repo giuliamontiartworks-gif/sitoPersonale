@@ -385,6 +385,12 @@ def grazie():
     return render_template("grazie.html")
 
 
+@app.route("/privacy")
+def privacy():
+    """Privacy & Cookie Policy: dati raccolti (form Contatti, Google Analytics) e diritti GDPR."""
+    return render_template("privacy.html")
+
+
 @app.route("/robots.txt")
 def robots():
     """
@@ -413,6 +419,7 @@ def sitemap():
         {"loc": url_for("portfolio", _external=True), "priorita": "0.9"},
         {"loc": url_for("chi_sono", _external=True), "priorita": "0.7"},
         {"loc": url_for("contatti", _external=True), "priorita": "0.7"},
+        {"loc": url_for("privacy", _external=True), "priorita": "0.3"},
     ]
     for categoria in elenco_categorie():
         pagine.append({
