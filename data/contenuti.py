@@ -30,11 +30,9 @@ social = [
     {"nome": "Behance", "url": "https://www.behance.net/giuliamonti7"},
 ]
 
-# URL del PDF con curriculum + portfolio completo (link in Portfolio).
-# Valore di ripiego: se NON c'e' nessun PDF in static/documenti/ il link viene
-# nascosto. Per attivarlo basta mettere il file .pdf in quella cartella
-# (vedi app.py -> _url_portfolio_pdf). Qui non serve piu' toccare niente.
-url_portfolio_pdf = "#"
+# I link ai PDF (CV e portfolio, nella pagina Portfolio) sono trovati in
+# automatico da app.py dentro static/documenti/: non c'e' niente da mettere
+# qui (vedi app.py -> _url_documento).
 
 # Testo del footer, su due righe (a capo dopo il punto interrogativo).
 footer = {

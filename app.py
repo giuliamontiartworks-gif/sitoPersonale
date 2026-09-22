@@ -94,31 +94,36 @@ def variabili_globali():
         "social": contenuti.social,
         "footer": contenuti.footer,
         "categorie": elenco_categorie(),
-        "url_portfolio_pdf": _url_portfolio_pdf(),
+        "url_cv_pdf": _url_documento(("cv",)),
+        "url_portfolio_pdf": _url_documento(("portfolio",)),
         "anno_corrente": 2026,
     }
 
 
 # ---------------------------------------------------------------------------
-# PDF del portfolio + curriculum (link nella pagina Portfolio).
-# Basta mettere UN file .pdf dentro static/documenti/ (con qualsiasi nome):
-# il sito lo trova da solo e il link diventa un download automatico.
-# Se la cartella non c'e' o e' vuota, torniamo il valore di ripiego da
-# contenuti.py (di solito "#") e il template nasconde il link.
+# PDF del CV e del portfolio (due link separati nella pagina Portfolio).
+# In static/documenti/ mettiamo due file .pdf, uno il cui nome contiene "cv"
+# e uno il cui nome contiene "portfolio" (maiuscole/minuscole non contano,
+# es. "CV.pdf" o "portfolio-giulia.pdf" vanno bene entrambi). Il sito trova
+# da solo quello giusto per ogni link: non serve toccare il codice per
+# sostituire un file, basta rimetterne uno con un nome che lo contenga.
+# Se manca, il link a quel documento sparisce dalla pagina.
 # ---------------------------------------------------------------------------
-def _url_portfolio_pdf():
+def _url_documento(parole_nel_nome):
     cartella = os.path.join(app.static_folder, "documenti")
     try:
         nomi = sorted(os.listdir(cartella))
     except OSError:
-        return contenuti.url_portfolio_pdf
+        return "#"
 
     for nome in nomi:
         if nome.startswith(".") or not nome.lower().endswith(".pdf"):
             continue
-        return url_for("static", filename="documenti/" + nome)
+        nome_minuscolo = nome.lower()
+        if any(parola in nome_minuscolo for parola in parole_nel_nome):
+            return url_for("static", filename="documenti/" + nome)
 
-    return contenuti.url_portfolio_pdf
+    return "#"
 
 
 # Helper disponibile nei template: dice se un file statico esiste davvero.

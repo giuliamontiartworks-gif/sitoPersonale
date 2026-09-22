@@ -68,10 +68,11 @@ Il server si riavvia da solo a ogni salvataggio (`debug=True` in `app.py`).
   `chi-sono` o `chi_sono` (qualsiasi estensione, anche maiuscola: `chi_sono.JPG`
   va bene). Il sito la trova da solo; senza foto mostra un segnaposto.
 - Link social veri in `data/contenuti.py`.
-- **PDF curriculum + portfolio**: metti un file `.pdf` (nome libero) in
-  `static/documenti/`. Il sito lo trova da solo e la CTA nella pagina Portfolio
-  ("Scarica qui il mio curriculum…") diventa un download automatico. Cartella
-  vuota → il link non compare.
+- **PDF curriculum e portfolio**: metti DUE file `.pdf` in `static/documenti/`
+  — uno con "cv" nel nome (es. `CV.pdf`) e uno con "portfolio" nel nome (es.
+  `portfolio.pdf`). Il sito li trova da soli e mostra due bottoni di download
+  separati nella pagina Portfolio. Se manca uno dei due, sparisce solo il suo
+  bottone (l'altro resta).
 - Certificazioni reali in `data/certificazioni.py` (per ora segnaposto).
 
 ## Invio del form contatti (email)

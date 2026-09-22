@@ -14,14 +14,25 @@
     <p class="testo-lungo">
       Progetti di art direction, illustrazione e strategia realizzati a Torino, per
       brand, editoria e agenzie, sia nel profit sia nel no profit. Ogni categoria
-      raccoglie una selezione: il quadro completo è nel PDF.
-      {% if url_portfolio_pdf and url_portfolio_pdf != "#" %}
-        {# "download" fa partire il salvataggio del file invece di aprirlo nel browser. #}
-        <a class="link-accento" href="{{ url_portfolio_pdf }}" download>
-          Scarica qui il mio curriculum e il portfolio completo in PDF
-        </a>.
-      {% endif %}
+      raccoglie una selezione: il quadro completo è nei PDF qui sotto.
     </p>
+
+    {# Due download separati: "download" fa partire il salvataggio del file
+       invece di aprirlo nel browser. Ognuno compare solo se il file
+       corrispondente esiste in static/documenti/ (vedi app.py). #}
+    {% if (url_cv_pdf and url_cv_pdf != "#") or (url_portfolio_pdf and url_portfolio_pdf != "#") %}
+      <p class="testo-lungo">
+        {% if url_cv_pdf and url_cv_pdf != "#" %}
+          <a class="link-accento" href="{{ url_cv_pdf }}" download>Scarica il mio curriculum in PDF</a>
+        {% endif %}
+        {% if url_cv_pdf != "#" and url_portfolio_pdf != "#" %}
+          &nbsp;·&nbsp;
+        {% endif %}
+        {% if url_portfolio_pdf and url_portfolio_pdf != "#" %}
+          <a class="link-accento" href="{{ url_portfolio_pdf }}" download>Scarica il portfolio completo in PDF</a>
+        {% endif %}
+      </p>
+    {% endif %}
   </section>
 
   {# Una sezione per categoria: titolo + carosello orizzontale di 3 progetti.
