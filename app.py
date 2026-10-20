@@ -18,7 +18,15 @@ Invio email del form Contatti: le credenziali stanno nel file ".env"
 import os
 import time
 
-from flask import Flask, render_template, abort, redirect, url_for, request
+from flask import (
+    Flask,
+    render_template,
+    abort,
+    redirect,
+    url_for,
+    request,
+    send_from_directory,
+)
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 
@@ -94,8 +102,8 @@ def variabili_globali():
         "social": contenuti.social,
         "footer": contenuti.footer,
         "categorie": elenco_categorie(),
-        "url_cv_pdf": _url_documento(("cv",)),
-        "url_portfolio_pdf": _url_documento(("portfolio",)),
+        "url_cv_pdf": _url_documento("cv"),
+        "url_portfolio_pdf": _url_documento("portfolio"),
         "anno_corrente": 2026,
     }
 
@@ -108,21 +116,41 @@ def variabili_globali():
 # da solo quello giusto per ogni link: non serve toccare il codice per
 # sostituire un file, basta rimetterne uno con un nome che lo contenga.
 # Se manca, il link a quel documento sparisce dalla pagina.
+#
+# I link NON puntano direttamente al file in static/: passano dalla rotta
+# /scarica/<tipo> (vedi sotto), che risponde con l'intestazione "attachment".
+# E' quella che obbliga TUTTI i browser a scaricare il file invece di aprirlo
+# in una nuova scheda (l'attributo HTML "download" da solo non basta: Safari
+# e il lettore PDF di Chrome spesso lo ignorano).
 # ---------------------------------------------------------------------------
-def _url_documento(parole_nel_nome):
+# Quale parola deve contenere il nome del file, e che nome dare al download.
+_DOCUMENTI_SCARICABILI = {
+    "cv": {"parola": "cv", "nome_download": "Giulia-Monti-CV.pdf"},
+    "portfolio": {"parola": "portfolio", "nome_download": "Giulia-Monti-Portfolio.pdf"},
+}
+
+
+def _nome_file_documento(tipo):
+    """Nome del file in static/documenti/ per 'cv' o 'portfolio' (None se manca)."""
     cartella = os.path.join(app.static_folder, "documenti")
     try:
         nomi = sorted(os.listdir(cartella))
     except OSError:
-        return "#"
+        return None
 
+    parola = _DOCUMENTI_SCARICABILI[tipo]["parola"]
     for nome in nomi:
         if nome.startswith(".") or not nome.lower().endswith(".pdf"):
             continue
-        nome_minuscolo = nome.lower()
-        if any(parola in nome_minuscolo for parola in parole_nel_nome):
-            return url_for("static", filename="documenti/" + nome)
+        if parola in nome.lower():
+            return nome
+    return None
 
+
+def _url_documento(tipo):
+    """Link di download per i template, oppure '#' se il file non esiste."""
+    if _nome_file_documento(tipo):
+        return url_for("scarica", tipo=tipo)
     return "#"
 
 
@@ -383,6 +411,27 @@ def _sembra_spam(dati_form):
 def grazie():
     """Pagina di conferma dopo l'invio del form."""
     return render_template("grazie.html")
+
+
+@app.route("/scarica/<tipo>")
+def scarica(tipo):
+    """
+    Scarica il CV o il portfolio (tipo = "cv" | "portfolio").
+    as_attachment=True aggiunge l'intestazione "Content-Disposition: attachment",
+    che fa partire il download su qualsiasi browser, invece di aprire il PDF.
+    """
+    if tipo not in _DOCUMENTI_SCARICABILI:
+        abort(404)
+    nome_file = _nome_file_documento(tipo)
+    if not nome_file:
+        abort(404)
+
+    return send_from_directory(
+        os.path.join(app.static_folder, "documenti"),
+        nome_file,
+        as_attachment=True,
+        download_name=_DOCUMENTI_SCARICABILI[tipo]["nome_download"],
+    )
 
 
 @app.route("/privacy")
