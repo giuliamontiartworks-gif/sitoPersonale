@@ -25,7 +25,7 @@ from flask import (
     redirect,
     url_for,
     request,
-    send_from_directory,
+    Response,
 )
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
@@ -413,12 +413,26 @@ def grazie():
     return render_template("grazie.html")
 
 
+def _file_a_blocchi(percorso, dimensione_blocco=1024 * 1024):
+    """Legge un file un po' alla volta (1 MB per volta) invece che tutto insieme."""
+    with open(percorso, "rb") as file_pdf:
+        while True:
+            blocco = file_pdf.read(dimensione_blocco)
+            if not blocco:
+                break
+            yield blocco
+
+
 @app.route("/scarica/<tipo>")
 def scarica(tipo):
     """
     Scarica il CV o il portfolio (tipo = "cv" | "portfolio").
-    as_attachment=True aggiunge l'intestazione "Content-Disposition: attachment",
-    che fa partire il download su qualsiasi browser, invece di aprire il PDF.
+
+    - "Content-Disposition: attachment" fa partire il download su qualsiasi
+      browser, invece di aprire il PDF in una nuova scheda.
+    - Il file viene mandato a blocchi (streaming) e SENZA "Content-Length":
+      su Cloud Run una risposta normale non puo' superare 32 MB, mentre una
+      in streaming non ha limite. Il portfolio pesa ~55 MB, quindi serve.
     """
     if tipo not in _DOCUMENTI_SCARICABILI:
         abort(404)
@@ -426,12 +440,11 @@ def scarica(tipo):
     if not nome_file:
         abort(404)
 
-    return send_from_directory(
-        os.path.join(app.static_folder, "documenti"),
-        nome_file,
-        as_attachment=True,
-        download_name=_DOCUMENTI_SCARICABILI[tipo]["nome_download"],
-    )
+    percorso = os.path.join(app.static_folder, "documenti", nome_file)
+    risposta = Response(_file_a_blocchi(percorso), mimetype="application/pdf")
+    nome_download = _DOCUMENTI_SCARICABILI[tipo]["nome_download"]
+    risposta.headers["Content-Disposition"] = 'attachment; filename="%s"' % nome_download
+    return risposta
 
 
 @app.route("/privacy")
