@@ -1,0 +1,86 @@
+{#- =========================================================================
+   llms.txt — presentazione del sito pensata per le AI (ChatGPT, Claude,
+   Gemini, motori di ricerca con AI...). E' il formato proposto su llmstxt.org:
+   titolo, riassunto in citazione, poi sezioni con elenchi di link.
+
+   Non e' una pagina per i visitatori: viene servita da /llms.txt (vedi
+   app.py -> llms). Esperienza, formazione, lingue, certificazioni, categorie
+   e progetti si aggiornano da soli dai file in data/. Sono scritti a mano
+   solo il riassunto in alto (anche quello in inglese) e la sezione
+   "Disponibilita'": se cambia cosa cerchi, aggiornali qui.
+   ========================================================================= -#}
+
+{#- Una riga di elenco per ogni progetto (usata sia per quelli in evidenza sia per gli altri). -#}
+{%- macro riga_progetto(p) -%}
+- [{{ p.nome }}]({{ url_for('progetto', slug_progetto=p.slug, _external=True) }}): {{ p.overview|replace("\n", " ") }} Categorie: {% for s in p.categorie %}{{ nome_disciplina(s) }}{{ ", " if not loop.last else "." }}{% endfor %} Contesto: {{ p.contesto }}, {{ p.anno }}.{% if p.cliente %} Cliente: {{ p.cliente }}.{% endif %} Strumenti: {{ p.strumenti|join(", ") }}.
+{%- endmacro -%}
+
+# {{ persona.nome }} — Art director junior, illustratrice e strategist a {{ persona.citta }}
+
+> Portfolio di {{ persona.nome }}, art director junior, illustratrice e strategist a {{ persona.citta }}. Studia Communication Design allo IAAD e ha già lavorato in agenzia (Hello Tomorrow, agenzia a impatto positivo). Si occupa di art direction, strategia, brand identity, UX/UI e web design, illustrazione, fotografia, impaginazione editoriale e packaging, per aziende profit e no profit, brand ed editoria.
+
+In English: {{ persona.nome }} is a junior art director, illustrator and strategist based in Turin, Italy. She studies Communication Design at IAAD and has worked as a junior art director at Hello Tomorrow, a positive-impact agency. Her work covers art direction, strategy, brand identity, UX/UI and web design, illustration, photography, editorial layout and packaging. Languages: Italian (native), English (C2), Spanish (A1). The website is in Italian.
+
+## Disponibilità
+
+{{ persona.nome }} cerca sia ruoli in agenzia sia lavori da freelance. Lavora con agenzie e con clienti privati, con aziende profit e con organizzazioni no profit, ed è aperta anche a collaborazioni con altri freelance.
+
+In English: open to agency roles and to freelance work, for agencies and private clients, for-profit and non-profit organizations, and to collaborations with other freelancers.
+
+Contatti: {{ persona.email }}, oppure il modulo nella pagina Contatti.
+
+## Pagine principali
+
+- [Home]({{ url_for('home', _external=True) }}): presentazione e progetti in evidenza.
+- [Portfolio]({{ url_for('portfolio', _external=True) }}): tutti i progetti, divisi per categoria.
+- [Chi sono]({{ url_for('chi_sono', _external=True) }}): percorso, esperienze, formazione, certificazioni, lingue e interessi.
+- [Contatti]({{ url_for('contatti', _external=True) }}): modulo di contatto e recapiti.
+
+## Esperienza
+
+{% for e in esperienze -%}
+- {{ e.ruolo }} — {{ e.azienda }} ({{ e.contesto }}): {{ e.descrizione }}
+{% endfor %}
+## Formazione
+
+{% for f in formazione -%}
+- {{ f.ruolo }} — {{ f.azienda }} ({{ f.contesto }}){% if f.descrizione %}: {{ f.descrizione }}{% endif %}
+{% endfor %}
+## Lingue e certificazioni
+
+- Lingue: {% for l in lingue %}{{ l.lingua }} ({{ l.livello }}){{ ", " if not loop.last else "." }}{% endfor %}
+- Certificazioni (corsi online con test finale superato): {% for c in certificazioni %}{{ c.nome }} ({{ c.ente }}){{ ", " if not loop.last else "." }}{% endfor %}
+
+## Categorie del portfolio
+
+{% for c in categorie -%}
+- [{{ c.nome }}]({{ url_for('categoria', slug_categoria=c.slug, _external=True) }}): {{ c.descrizione }}
+{% endfor %}
+## Progetti in evidenza
+
+{% for p in progetti_evidenza -%}
+{{ riga_progetto(p) }}
+{% endfor %}
+## Altri progetti
+
+{% for p in altri_progetti -%}
+{{ riga_progetto(p) }}
+{% endfor %}
+## Servizi offerti
+
+{% for s in servizi -%}
+- {{ s.nome }}
+{% endfor %}
+## Opzionale
+
+{% if url_cv_pdf != "#" -%}
+- [Curriculum (PDF)]({{ url_for('scarica', tipo='cv', _external=True) }}): il curriculum completo.
+{% endif -%}
+{% if url_portfolio_pdf != "#" -%}
+- [Portfolio completo (PDF)]({{ url_for('scarica', tipo='portfolio', _external=True) }}): file di grandi dimensioni, con tutti i progetti.
+{% endif -%}
+{% for s in social -%}
+- [{{ s.nome }}]({{ s.url }}): profilo di {{ persona.nome }} su {{ s.nome }}.
+{% endfor -%}
+- [Privacy & Cookie Policy]({{ url_for('privacy', _external=True) }}): informativa sui dati raccolti dal sito.
+- [Sitemap]({{ url_for('sitemap', _external=True) }}): elenco completo delle pagine in XML.

@@ -37,6 +37,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/pagine.css') }}">
 
   <link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}">
+
+  {# Dati strutturati (Schema.org / JSON-LD): una pagina puo' riempire questo
+     blocco per dire ai motori di ricerca e alle AI "chi" e' il soggetto del
+     sito, in un formato che le macchine leggono senza interpretare il testo. #}
+  {% block dati_strutturati %}{% endblock %}
 </head>
 <body class="{% block classe_body %}{% endblock %}">
 

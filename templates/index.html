@@ -6,6 +6,12 @@
 {% from "partials/card_servizio.html" import card_servizio %}
 {% from "partials/badge_certificazione.html" import badge_certificazione %}
 
+{# Dati strutturati Schema.org (chi e' Giulia): preparati in app.py -> home().
+   "tojson" li scrive come JSON valido e li protegge da caratteri speciali. #}
+{% block dati_strutturati %}
+  <script type="application/ld+json">{{ dati_strutturati|tojson }}</script>
+{% endblock %}
+
 {% block titolo %}Giulia Monti — Art director, strategist e illustratrice a Torino{% endblock %}
 {% block descrizione %}Giulia Monti: art direction, strategia e illustrazione a Torino. Progetti per brand profit e no profit, con un'estetica che serve il risultato.{% endblock %}
 {% block classe_body %}pagina-home{% endblock %}

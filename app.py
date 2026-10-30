@@ -28,6 +28,7 @@ from flask import (
     Response,
 )
 from flask_mail import Mail, Message
+from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
 
 # Carica le variabili del file .env (se presente) in os.environ.
@@ -48,6 +49,14 @@ from data import contenuti
 
 
 app = Flask(__name__)
+
+# Su Cloud Run il sito sta dietro un proxy di Google: il visitatore arriva in
+# HTTPS, ma al nostro codice la richiesta arriva in HTTP semplice. Senza questa
+# riga gli indirizzi "assoluti" (sitemap.xml, robots.txt, llms.txt) uscirebbero
+# con "http://" invece di "https://". ProxyFix legge le intestazioni
+# X-Forwarded-* che il proxy aggiunge e ricostruisce l'indirizzo vero.
+# In locale (nessun proxy) non cambia nulla.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
 # In sviluppo: non far tenere in cache al browser i file statici (CSS/JS),
 # cosi' ogni modifica si vede subito senza dover svuotare la cache.
@@ -270,6 +279,43 @@ def invia_email_contatto(dati):
 # Rotte
 # ---------------------------------------------------------------------------
 
+def _dati_strutturati_persona():
+    """
+    Dati strutturati Schema.org (tipo "Person") per la Home: dicono a Google e
+    alle AI, in forma leggibile dalle macchine, chi e' Giulia, che lavoro fa,
+    dove, e quali sono i suoi profili ufficiali (utile anche per non
+    confonderla con eventuali omonime). Vengono scritti nella pagina dentro un
+    <script type="application/ld+json"> (vedi index.html).
+    """
+    dati = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": contenuti.persona["nome"],
+        "url": url_for("home", _external=True),
+        "jobTitle": "Art director junior, illustratrice e strategist",
+        "description": contenuti.chi_sono["sottotitolo"],
+        "email": contenuti.persona["email"],
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": contenuti.persona["citta"],
+            "addressCountry": "IT",
+        },
+        # Sta studiando allo IAAD (non e' ancora diplomata): "affiliation".
+        "affiliation": {
+            "@type": "EducationalOrganization",
+            "name": "IAAD — Istituto d'Arte Applicata e Design",
+        },
+        "knowsAbout": [servizio["nome"] for servizio in contenuti.servizi],
+        "knowsLanguage": ["it", "en", "es"],
+        "sameAs": [rete["url"] for rete in contenuti.social],
+    }
+    # Se c'e' la foto di "Chi sono", la aggiungiamo (indirizzo assoluto).
+    foto = foto_chi_sono()
+    if foto:
+        dati["image"] = url_for("static", filename=foto, _external=True)
+    return dati
+
+
 @app.route("/")
 def home():
     """Pagina Home."""
@@ -280,6 +326,7 @@ def home():
         certificazioni=elenco_certificazioni(),
         testi=contenuti.home,
         esperienze=contenuti.esperienze,
+        dati_strutturati=_dati_strutturati_persona(),
     )
 
 
@@ -496,6 +543,31 @@ def sitemap():
 
     corpo = render_template("sitemap.xml", pagine=pagine)
     return corpo, 200, {"Content-Type": "application/xml; charset=utf-8"}
+
+
+@app.route("/llms.txt")
+def llms():
+    """
+    Presentazione del sito per le AI, nel formato llms.txt (llmstxt.org):
+    testo semplice in Markdown con riassunto e link alle pagine importanti.
+    Come la sitemap, categorie e progetti arrivano dai dati: non serve
+    aggiornarla a mano quando se ne aggiunge uno.
+    """
+    in_evidenza = progetti_in_evidenza()
+    slug_in_evidenza = {p["slug"] for p in in_evidenza}
+    altri = [p for p in elenco_progetti() if p["slug"] not in slug_in_evidenza]
+
+    corpo = render_template(
+        "llms.txt",
+        progetti_evidenza=in_evidenza,
+        altri_progetti=altri,
+        servizi=contenuti.servizi,
+        esperienze=contenuti.esperienze,
+        formazione=contenuti.formazione,
+        lingue=contenuti.lingue,
+        certificazioni=elenco_certificazioni(),
+    )
+    return corpo, 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 
 @app.errorhandler(404)
