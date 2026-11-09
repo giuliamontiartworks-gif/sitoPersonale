@@ -15,6 +15,7 @@ Invio email del form Contatti: le credenziali stanno nel file ".env"
 (non committato). Vedi ".env.example" per le variabili richieste.
 """
 
+import hashlib
 import os
 import time
 
@@ -81,22 +82,64 @@ mail = Mail(app)
 
 
 # ---------------------------------------------------------------------------
-# "Cache busting": a ogni URL di file statico aggiungiamo ?v=<data-modifica>,
-# cosi' quando cambi un CSS o un JS il browser scarica per forza la versione
-# nuova (l'URL cambia). Sostituisce url_for solo per i file statici.
+# "Cache busting": a ogni URL di file statico aggiungiamo ?v=<impronta>,
+# cosi' quando cambi un CSS, un JS o un'immagine il browser scarica per forza
+# la versione nuova (l'URL cambia). Sostituisce url_for solo per i file statici.
+# Va registrata come "globale" di Jinja (e non nel contesto) perche' cosi' vale
+# anche dentro le macro importate (es. card_progetto), che altrimenti
+# userebbero il url_for normale, senza versione.
 # ---------------------------------------------------------------------------
-@app.context_processor
-def _url_for_con_versione():
-    def url_for_statico(endpoint, **valori):
-        if endpoint == "static":
-            nome_file = valori.get("filename")
-            if nome_file:
-                percorso = os.path.join(app.static_folder, nome_file)
-                if os.path.isfile(percorso):
-                    valori["v"] = int(os.stat(percorso).st_mtime)
-        return url_for(endpoint, **valori)
+def url_for_con_versione(endpoint, **valori):
+    if endpoint == "static":
+        nome_file = valori.get("filename")
+        if nome_file:
+            percorso = os.path.join(app.static_folder, nome_file)
+            if os.path.isfile(percorso):
+                valori["v"] = _versione_file(percorso)
+    return url_for(endpoint, **valori)
 
-    return {"url_for": url_for_statico}
+
+app.jinja_env.globals["url_for"] = url_for_con_versione
+
+
+# "Impronta" del contenuto di un file statico: cambia SOLO se il file cambia.
+# Serve come "?v=..." nei link, cosi' il browser puo' tenere in cache i file
+# per un anno (vedi cache_lunga_per_statici) e ne scarica uno nuovo appena
+# il contenuto cambia. NON si usa la data di modifica perche' su Cloud Run
+# tutti i file hanno la stessa data (1 gennaio 1980) e non cambierebbe mai.
+_versioni_statici = {}   # percorso -> (data+dimensione, impronta)
+
+
+def _versione_file(percorso):
+    info = os.stat(percorso)
+    firma = (info.st_mtime_ns, info.st_size)
+    gia_calcolata = _versioni_statici.get(percorso)
+    if gia_calcolata and gia_calcolata[0] == firma:
+        return gia_calcolata[1]          # file invariato: niente da ricalcolare
+
+    impronta = hashlib.md5()
+    with open(percorso, "rb") as file_statico:
+        for blocco in iter(lambda: file_statico.read(1024 * 1024), b""):
+            impronta.update(blocco)
+    versione = impronta.hexdigest()[:10]
+    _versioni_statici[percorso] = (firma, versione)
+    return versione
+
+
+@app.after_request
+def cache_lunga_per_statici(risposta):
+    """
+    I file statici i cui link hanno "?v=<impronta>" (tutti quelli messi nei
+    template con url_for) possono restare in cache nel browser per un anno:
+    se il file cambia, cambia l'impronta, quindi cambia il link e il browser
+    lo riscarica. Le immagini non vengono piu' riscaricate ad ogni visita.
+    I file senza "?v=" (es. le immagini richiamate dentro i CSS) restano
+    come prima: il browser li ricontrolla ogni volta.
+    """
+    if (request.path.startswith("/static/") and request.args.get("v")
+            and risposta.status_code in (200, 206, 304)):
+        risposta.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    return risposta
 
 
 # ---------------------------------------------------------------------------
@@ -207,6 +250,25 @@ def media_progetto(slug):
 @app.template_global()
 def immagini_progetto(slug):
     return [m["percorso"] for m in media_progetto(slug) if not m["video"]]
+
+
+# Helper disponibile nei template: la copertina da mostrare nelle card.
+# Le card sono larghe poche centinaia di pixel: per loro basta la MINIATURA
+# (static/img/progetti/<slug>/miniature/, creata da strumenti/ottimizza_immagini.py),
+# molto piu' leggera dell'immagine intera. Se la miniatura non c'e', o se serve
+# la versione grande (grande=True, per la card "vetrina" della Home), si usa
+# la prima immagine del progetto. Restituisce un percorso relativo a static/.
+@app.template_global()
+def copertina_progetto(slug, grande=False):
+    immagini = immagini_progetto(slug)
+    if not immagini:
+        return None
+    if not grande:
+        cartella, nome = os.path.split(immagini[0])
+        miniatura = cartella + "/miniature/" + nome
+        if file_statico_esiste(miniatura):
+            return miniatura
+    return immagini[0]
 
 
 # Helper disponibile nei template: trova la foto della pagina "Chi sono" in

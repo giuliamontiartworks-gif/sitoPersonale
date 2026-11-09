@@ -33,8 +33,13 @@
                       type="video/{{ 'webm' if media.percorso.endswith('.webm') else 'mp4' }}">
             </video>
           {% elif media %}
+            {# Solo la PRIMA immagine si carica subito (e con priorita'). Le altre
+               sono "pigre": il browser le scarica quando servono, e
+               slideshow-progetto.js precarica quella dopo e quella prima. Cosi'
+               la pagina non scarica decine di foto che non stai guardando. #}
             <img src="{{ url_for('static', filename=media.percorso) }}"
-                 alt="{{ progetto.nome }} — immagine {{ loop.index }} di {{ slide_media|length }}">
+                 alt="{{ progetto.nome }} — immagine {{ loop.index }} di {{ slide_media|length }}"
+                 {% if loop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>
           {% else %}
             <span class="segnaposto-immagine">{{ progetto.nome }} — immagine {{ loop.index }}</span>
           {% endif %}

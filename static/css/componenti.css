@@ -1140,17 +1140,36 @@
   font-size: 0.85rem;
 }
 
+/* I due bottoni in alto ("Torna a..." a sinistra, "Info" a destra) devono
+   avere SEMPRE la stessa altezza. Per questo hanno altezza fissa, invece di
+   dipendere dall'interlinea: un <a> eredita quella del sito (1.6) mentre un
+   <button> usa quella del browser ("normal"), e usciva di ~6px piu' basso.
+   Il testo non va mai a capo, altrimenti "Torna a..." diventerebbe piu' alto. */
+.slideshow__ritorno,
+.slideshow__info-toggle {
+  box-sizing: border-box;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: var(--raggio-pillola);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 40px;
+  white-space: nowrap;
+}
+
 /* Pillola "Torna a [Categoria]" in alto a sinistra (meno prominente). */
 .slideshow__ritorno {
   position: absolute;
   top: var(--spazio-m);
   left: var(--spazio-m);
-  padding: 8px 16px;
-  border-radius: var(--raggio-pillola);
+  /* Su schermi stretti non deve finire sotto al bottone Info: se il nome della
+     categoria e' lungo, il testo si accorcia con "...". */
+  max-width: calc(100% - 2 * var(--spazio-m) - 88px);
+  overflow: hidden;
+  text-overflow: ellipsis;
   background-color: var(--colore-bianco);
   color: var(--colore-testo);
-  font-size: 0.9rem;
-  font-weight: 500;
   text-decoration: none;
   box-shadow: var(--ombra-morbida);
 }
@@ -1164,13 +1183,9 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spazio-xs);
-  padding: 8px 16px;
   border: none;
-  border-radius: var(--raggio-pillola);
   background-color: var(--colore-rosso);
   color: var(--colore-bianco);
-  font-size: 0.9rem;
-  font-weight: 500;
 }
 
 /* La freccia e' un chevron a TRATTO (SVG con stroke, non riempito).

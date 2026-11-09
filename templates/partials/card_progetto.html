@@ -12,21 +12,25 @@
      - con_tag  : true (default) mostra la disciplina sopra al titolo
      - vetrina  : true rende la card in versione grande
 
-   La copertina e' sempre "01.jpg" della cartella static/img/progetti/<slug>/
-   (letta a runtime da immagini_progetto(), vedi app.py).
+   La copertina e' la prima immagine della cartella static/img/progetti/<slug>/.
+   Nelle card si usa la sua MINIATURA (molto piu' leggera), tranne nella card
+   "vetrina" che e' grande e usa l'immagine intera: vedi copertina_progetto()
+   in app.py. Le immagini si caricano "in pigro" (loading="lazy"): il browser
+   le scarica solo quando stanno per comparire sullo schermo; la vetrina, che
+   e' subito in vista, si carica subito.
    Tutta la card è un unico link, per questo non ci sono <a> annidati.
    ========================================================================= #}
 
 {% macro card_progetto(progetto, con_tag=true, vetrina=false) -%}
-  {%- set immagini = immagini_progetto(progetto.slug) -%}
-  {%- set copertina = immagini[0] if immagini else none -%}
+  {%- set copertina = copertina_progetto(progetto.slug, grande=vetrina) -%}
 
   <article class="card-progetto {{ 'card-progetto--vetrina' if vetrina }}">
     <a class="card-progetto__link" href="{{ url_for('progetto', slug_progetto=progetto.slug) }}">
       <span class="card-progetto__media">
         {% if copertina %}
           <img src="{{ url_for('static', filename=copertina) }}"
-               alt="Anteprima del progetto {{ progetto.nome }}">
+               alt="Anteprima del progetto {{ progetto.nome }}"
+               {% if vetrina %}loading="eager"{% else %}loading="lazy" decoding="async"{% endif %}>
         {% else %}
           {# Segnaposto mostrato finché non ci sono immagini nella cartella. #}
           <span class="segnaposto-immagine">{{ progetto.nome }}</span>

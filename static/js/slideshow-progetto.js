@@ -79,6 +79,32 @@
 
   var indiceAttivo = 0;
 
+  // Le immagini dopo la prima sono "pigre" (loading="lazy", vedi progetto.html):
+  // il browser non le scarica finche' non servono. Per non far aspettare chi
+  // preme la freccia, quella DOPO e quella PRIMA della slide attuale vengono
+  // fatte scaricare in anticipo: basta passare l'attributo da "lazy" a "eager".
+  function precaricaVicine() {
+    if (slides.length < 2) {
+      return;
+    }
+    [indiceAttivo + 1, indiceAttivo - 1].forEach(function (indice) {
+      var vicina = slides[(indice + slides.length) % slides.length];
+      var immagine = vicina.querySelector("img");
+      if (!immagine) {
+        return;                       // la slide e' un video o un segnaposto
+      }
+      if (immagine.loading === "lazy") {
+        immagine.loading = "eager";   // la scarica subito
+      }
+      // decode() la prepara gia' "pronta da disegnare": quando si preme la
+      // freccia compare all'istante, senza il lampo vuoto di una decodifica
+      // fatta al momento. Se il browser non lo supporta si va avanti senza.
+      if (immagine.decode) {
+        immagine.decode().catch(function () {});
+      }
+    });
+  }
+
   function mostraSlide(nuovoIndice) {
     // Indice "circolare": dopo l'ultima si torna alla prima e viceversa.
     if (nuovoIndice < 0) {
@@ -100,7 +126,12 @@
     if (contatore) {
       contatore.textContent = (indiceAttivo + 1) + " / " + slides.length;
     }
+
+    precaricaVicine();
   }
+
+  // Appena la pagina e' pronta, si precaricano le immagini accanto alla prima.
+  precaricaVicine();
 
   if (frecciaPrec) {
     frecciaPrec.addEventListener("click", function () {

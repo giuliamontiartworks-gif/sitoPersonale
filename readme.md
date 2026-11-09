@@ -51,16 +51,37 @@ Il server si riavvia da solo a ogni salvataggio (`debug=True` in `app.py`).
 
 ## Cose ancora da fare (cerca `TODO` nel codice)
 
-- **Immagini e video dei progetti**: metti i file in `static/img/progetti/<slug>/`
-  nominati `01.jpg`, `02.jpg`, `03.mp4`… (c'è già una cartella per ogni progetto,
-  con un `.gitkeep`). Il sito li legge **automaticamente** dalla cartella
-  (ordinati per nome file). Non serve toccare `data/progetti.py`.
-  - Immagini: `.jpg .jpeg .png .webp .gif .avif`
-  - Video: `.mp4` (consigliato, H.264) o `.webm` — appaiono nello slideshow con
-    i controlli di riproduzione
-  - La **copertina** delle card è sempre la prima *immagine* (`01.jpg`): un video
-    non può fare da copertina, mettilo dalla `02` in poi
+- **Immagini e video dei progetti** — ⚠️ NON mettere le foto originali nel sito
+  (pesano decine di MB e rendono il sito lento; Safari non carica quelle enormi).
+  Il procedimento corretto è questo:
+  1. Metti le foto **originali** nella cartella
+     `Desktop/curriculum/originali-progetti/<slug>/` (fuori dal progetto; stessa
+     struttura di `static/img/progetti/`), nominate `01.jpg`, `02.png`, `03.mp4`…
+  2. Dalla cartella del progetto, con l'ambiente virtuale attivo:
+     ```bash
+     pip install pillow                                # solo la prima volta
+     python strumenti/ottimizza_immagini.py            # tutti i progetti
+     python strumenti/ottimizza_immagini.py eme avsi   # solo alcuni
+     ```
+     Lo script crea in `static/img/progetti/<slug>/` le versioni leggere
+     (max 2400 px, JPEG qualità 90, rotazione e colori conservati) e la
+     miniatura della copertina in `miniature/`. Gli originali non vengono toccati.
+  3. Fai commit e push come sempre.
+
+  Il sito legge le immagini **automaticamente** dalla cartella (ordinate per nome
+  file): non serve toccare `data/progetti.py`.
+  - Immagini: `.jpg .jpeg .png .webp .gif .avif` (le PNG diventano JPG, tranne
+    quelle davvero trasparenti)
+  - Video: `.mp4` (H.264) o `.webm`: vengono copiati così come sono, quindi
+    **comprimili prima** (pochi MB l'uno)
+  - La **copertina** delle card è la prima *immagine*: un video non può fare da
+    copertina, mettilo dalla `02` in poi
   - Cartella vuota → segnaposto lilla col nome
+  - ⚠️ Gli **originali sono solo sul tuo computer** (e nella cronologia git):
+    tieni una copia di `originali-progetti/` su un disco esterno o iCloud.
+  - Prestazioni: le immagini si caricano "in pigro" (solo quando servono) e restano
+    un anno nella cache del browser; i loro link hanno `?v=<impronta>` e cambiano da
+    soli quando il file cambia, quindi non serve fare nulla.
 - I **testi dei 19 progetti** (`data/progetti.py`) sono quelli definitivi dal
   documento di Giulia: NON modificarli senza il suo ok.
 - Le **descrizioni delle categorie** (`data/categorie.py`) sono ancora bozza (`TODO`).
